@@ -1,0 +1,33 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Sep 25 14:52:42 2017
+
+@author: david
+"""
+import unittest
+
+from Coordinate import Coord
+
+class TestCoordinate(unittest.TestCase):
+    
+    def test_x(self):
+        new_coord = Coord(2,2)
+        self.assertEqual(new_coord.get_x(), 2)
+        new_coord.set_x(10)
+        self.assertEqual(new_coord.get_x(),10)
+        self.assertFalse(new_coord.get_occupied())
+        
+    def test_str(self):
+        new_coord = Coord(1,1)
+        self.assertEqual(new_coord.__str__(), str(new_coord.get_x())+str(new_coord.get_y()))
+        
+    def test_y(self):
+        new_coord = Coord(1,1)
+        self.assertEqual(new_coord.get_y(), 1)
+        new_coord.set_y(5)
+        self.assertEqual(new_coord.get_y(), 5)
+        
+        
+if __name__ == '__main__':
+    unittest.main()

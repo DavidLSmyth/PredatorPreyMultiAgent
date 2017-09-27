@@ -7,7 +7,7 @@ Created on Mon Sep 25 14:51:23 2017
 """
 
 class Coord:
-    
+    '''A class which contains coordinates which make up a grid structure'''
     def __init__(self, init_x, init_y, occupied = False, *args):
         self._x = init_x
         self._y = init_y
@@ -21,7 +21,7 @@ class Coord:
         return False
         
     def __str__(self):
-        return str(self.get_x())+str(self.get_y())
+        return str(self.get_x())+','+str(self.get_y())
     
     def __repr__(self):
         return (self.get_x(), self.get_y())

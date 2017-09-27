@@ -6,7 +6,7 @@ Created on Wed Sep 27 14:44:05 2017
 """
 #test module for Environment and grid pawn
 import unittest
-from GridAbstractions import GridEnvironment, GridPawn
+from GridAbstractions import GridEnvironment, GridPawn, CoordOccupiedException, CoordOutOfBoundsException
 from Coordinate import Coord
 
 class GridPawnEnvironmentTest(unittest.TestCase):
@@ -45,6 +45,10 @@ class GridPawnEnvironmentTest(unittest.TestCase):
         pawn1.move(Coord(5,5))
         self.assertEqual(pawn1.current_coord, Coord(5,5))
         self.assertTrue(pawn1.current_coord in self.env.get_occupied_coords())
+        pawn2.move(Coord(0,0))
+        self.assertEqual(pawn2.current_coord, Coord(0,0))
+        with self.assertRaises(CoordOccupiedException):
+            pawn3.move(Coord(0,0))
         
 if __name__ == '__main__':
     unittest.main()

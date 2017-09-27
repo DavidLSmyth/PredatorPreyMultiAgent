@@ -6,7 +6,7 @@ class GridPawn:
         '''initialises the pawn's environment and places the pawn in the environment'''
         self.environment = environment
         if(self.environment.coord_occupied(coord)):
-            raise Exception('Coordinate {} is already occupied', coord.__str__())
+            raise CoordOccupiedException('Coordinate {} is already occupied', coord.__str__())
         else:
             self.environment.place_pawn(self, coord)
             self.current_coord = coord
@@ -45,7 +45,7 @@ class GridEnvironment:
                 self.occupied_coords.append(coord)
                 coord.set_occupied(True)
         else:
-            raise Exception('Coordinate {} is already occupied or is not in the grid bounds. Cannot move pawn to specified coordinate'.format(coord.__str__()))
+            raise CoordOutOfBoundsException('Coordinate {} is already occupied.'.format(coord.__str__()))
         
     def remove_pawn(self,pawn: GridPawn):
         '''removes a given pawn from the grid'''
@@ -62,8 +62,12 @@ class GridEnvironment:
         '''Moves a pawn that has already been placed on the grid to a new position'''
         if pawn in self.grid_pawns:
             if not self.coord_occupied(coord):
+                pawn.current_coord.set_occupied(False)
                 self.occupied_coords.remove(pawn.current_coord)
                 self.occupied_coords.append(coord)
+                coord.set_occupied(True)
+            else:
+                raise CoordOccupiedException('Coord {} is already occupied, cannot move pawn'.format(coord.__str__()))
         else:
             raise Exception('Please place pawn on the grid first using place_pawn')
         
@@ -76,11 +80,15 @@ class GridEnvironment:
     
     def coord_occupied(self,coord):
         if self.verify_valid_coord(coord):
-            return(coord.get_occupied())
+            return([x for x in self.coords if x == coord][0].get_occupied())
         else:
-            raise Exception('Coordinate out of bounds')
+            raise CoordOutOfBoundsException('Coordinate out of bounds')
     
+class CoordOutOfBoundsException(Exception):
+    pass
 
+class CoordOccupiedException(Exception):
+    pass
 
 
 #

@@ -6,7 +6,7 @@ Created on Wed Sep 27 14:44:05 2017
 """
 #test module for Environment and grid pawn
 import unittest
-from GridAbstractions import GridEnvironment, GridPawn, CoordOccupiedException, CoordOutOfBoundsException
+from GridAbstractions import GridEnvironment, GridPawn, CoordOccupiedException, CoordOutOfBoundsException, GridPawnAgent
 from Coordinate import Coord
 
 class GridPawnEnvironmentTest(unittest.TestCase):
@@ -50,12 +50,45 @@ class GridPawnEnvironmentTest(unittest.TestCase):
         self.assertEqual(pawn2.current_coord, Coord(0,0))
         self.assertFalse(pawn1.move(Coord(0,0)))
         self.assertTrue(pawn1.move(Coord(1,1)))
-    
-    def test_print_board(self):
-        pawn1 = GridPawn('1',Coord(0,0), self.env)
-        pawn2 = GridPawn('2',Coord(0,1), self.env)
-        pawn3 = GridPawn('3',Coord(9,9), self.env)
+        
+    def test_add_pawnAgent(self):
+        pawn1 = GridPawnAgent('1',Coord(0,0), self.env)
+        self.assertEqual(self.env.occupied_coords, [self.env._get_coord(Coord(0,0))])
+        self.assertEqual(self.env.grid_pawns, [pawn1])
+        
+    def test_move_pawnAgent(self):
+        pawn1 = GridPawnAgent('1',Coord(0,0), self.env)
+        pawn2 = GridPawnAgent('2',Coord(5,5), self.env)
+        pawn3 = GridPawnAgent('3',Coord(5,6), self.env)
+        
+        self.assertEqual(self.env.grid_pawns, [pawn1,pawn2, pawn3])
+        self.assertEqual(self.env.get_occupied_coords(), [self.env._get_coord(Coord(0,0)),self.env._get_coord(Coord(5,5)), self.env._get_coord(Coord(5,6))])
+        
+        pawn1.move(Coord(1,1))
+        self.assertFalse(self.env._get_coord(Coord(0,0)) in self.env.occupied_coords)
         print(self.env.print_board())
+        
+        
+    def test_perceive_pawnAgent(self):
+        pawn1 = GridPawnAgent('1', Coord(4,4), self.env)
+        pawn2 = GridPawnAgent('1', Coord(6,6), self.env)
+        pawn1.perceive()
+        self.assertTrue(pawn1.beliefs, {})
+        pawn1.perceive()
+        self.assertEqual(pawn1.beliefs, {pawn2: self.env._get_coord(Coord(6,6))})
+        print(pawn1.beliefs)
+        print(pawn2.beliefs)
+        self.assertTrue(pawn2.beliefs == {})
+        pawn2.perceive()
+        self.assertEqual(pawn2.beliefs, {pawn1:self.env._get_coord(Coord(4,4))})
+        
+        pawn1.move(Coord(0,0))
+        pawn1.perceive()
+        self.assertEqual(pawn1.beliefs, {pawn2:None})
+        self.assertEqual(pawn2.beliefs, {pawn1:self.env._get_coord(Coord(4,4))})
+        pawn2.perceive()
+        self.assertEqual(pawn2.beliefs, {pawn1:None})
+        
         
 if __name__ == '__main__':
     unittest.main()

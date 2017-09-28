@@ -25,7 +25,7 @@ class Coord:
         return str(self.get_x())+','+str(self.get_y())
     
     def __repr__(self):
-        return (self.get_x(), self.get_y())
+        return 'Coord({},{},{},{})'.format(self.get_x(), self.get_y(), self._occupied, self.occupied_val)
 
     def get_x(self):
         return self._x

@@ -2,19 +2,19 @@ from Coordinate import Coord
 
 class GridPawn:
     '''An abstract class which creates a pawn on the grid and allows the pawn to move around on the grid. The pawn may only exist on the grid'''
-    def __init__(self, name, coord:Coord, environment):
+    def __init__(self, name, coord:Coord, env):
         '''initialises the pawn's environment and places the pawn in the environment'''
-        self.environment = environment
+        self.env = env
         self.name = 'Pn'+name
-        if(self.environment.coord_occupied(coord)):
+        if(self.env.coord_occupied(coord)):
             raise CoordOccupiedException('Coordinate {} is already occupied', coord.__str__())
         else:
-            env_coord = self.environment.place_pawn(self, coord)
+            env_coord = self.env.place_pawn(self, coord)
             self.current_coord = env_coord
     
     def move(self, coord)->'Bool':
         try:
-            env_coord = self.environment.move_pawn(self,coord)
+            env_coord = self.env.move_pawn(self,coord)
             if env_coord:
                 self.current_coord = env_coord
                 return True
@@ -22,7 +22,10 @@ class GridPawn:
             return False
             
     def __str__(self):
-        return 'name: '+self.name + ' coords:  ' + self.current_coord.__str__()
+        return 'GridPawn({},{})'.format(self.name,self.current_coord)
+    
+    def __repr__(self):
+        return self.name+str(self.current_coord)
             
 class GridPawnAgent(GridPawn):
     def __init__(self, name, coord: Coord, environment, perception_radius = 3):
@@ -34,7 +37,7 @@ class GridPawnAgent(GridPawn):
     
     def perceive(self):
         '''Updates prey/other predator position if prey is within perception_radius squares'''
-        for grid_pawn in self.env.grid_pawns:
+        for grid_pawn in list(filter(lambda x: x!=self,self.env.grid_pawns)):
             if self.grid_pawn_in_radius(grid_pawn):
                 #agent knows where grid pawn is
                 self.beliefs[grid_pawn] = grid_pawn.current_coord

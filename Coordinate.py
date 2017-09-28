@@ -8,11 +8,12 @@ Created on Mon Sep 25 14:51:23 2017
 
 class Coord:
     '''A class which contains coordinates which make up a grid structure'''
-    def __init__(self, init_x, init_y, occupied = False, *args):
+    def __init__(self, init_x, init_y, occupied = False, occupied_val = None):
         self._x = init_x
         self._y = init_y
         self._occupied = occupied
-        self.args = args
+        self.occupied_val = occupied_val
+        
     
     def __eq__(self, other):
         if isinstance(other, Coord):
@@ -43,6 +44,12 @@ class Coord:
             raise TypeError('X value must be of type int, not type {}'.format(type(new_y)))
         else:
             self._y = new_y
+            
+    def get_value(self):
+        if(self.get_occupied()):
+            return self.occupied_val
+        else:
+            return None
             
     def set_occupied(self,new_value):
         self._occupied = new_value

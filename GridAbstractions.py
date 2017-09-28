@@ -5,7 +5,7 @@ class GridPawn:
     def __init__(self, name, coord:Coord, environment):
         '''initialises the pawn's environment and places the pawn in the environment'''
         self.environment = environment
-        self.name = name
+        self.name = 'Pn'+name
         if(self.environment.coord_occupied(coord)):
             raise CoordOccupiedException('Coordinate {} is already occupied', coord.__str__())
         else:
@@ -24,7 +24,31 @@ class GridPawn:
     def __str__(self):
         return 'name: '+self.name + ' coords:  ' + self.current_coord.__str__()
             
-            
+class GridPawnAgent(GridPawn):
+    def __init__(self, name, coord: Coord, environment, perception_radius = 3):
+        super().__init__(name, coord, environment)
+        #a dicionary of beliefs about current environment - holds other pawns and percieved position
+        self.beliefs = {}
+        self.perception_radius = perception_radius
+        self.name = 'Pa'+name
+    
+    def perceive(self):
+        '''Updates prey/other predator position if prey is within perception_radius squares'''
+        for grid_pawn in self.env.grid_pawns:
+            if self.grid_pawn_in_radius(grid_pawn):
+                #agent knows where grid pawn is
+                self.beliefs[grid_pawn] = grid_pawn.current_coord
+            else:
+                #agent still knows about grid_pawn but doesn't know its exact position
+                self.beliefs[grid_pawn] = None
+                     
+    def grid_pawn_in_radius(self, pawn:GridPawn):
+        if pawn.current_coord._x-self.perception_radius<=self.current_coord._x <= pawn.current_coord._x +self.perception_radius:
+            if pawn.current_coord._y-self.perception_radius<=self.current_coord._y<=pawn.current_coord._y+self.perception_radius:
+                return True
+            else:
+                return False
+    
 class GridEnvironment:
     '''Creates a grid environment'''
     def __init__(self, rows=10, columns=10):
@@ -51,6 +75,7 @@ class GridEnvironment:
                 self.grid_pawns.append(pawn)
                 self.occupied_coords.append(coord)
                 coord.set_occupied(True)
+                coord.occupied_val = pawn
                 return coord
         else:
             raise CoordOutOfBoundsException('Coordinate {} is already occupied.'.format(coord.__str__()))
@@ -61,6 +86,7 @@ class GridEnvironment:
             self.grid_pawns.remove(pawn)
             self.occupied_coords.remove(pawn.current_coord)
             pawn.current_coord.set_occupied(False)
+            pawn.current_coord.occupied_val=None
             print('Successfully removed pawn {} from environment'.format(pawn.name))
             del pawn
             
@@ -74,9 +100,11 @@ class GridEnvironment:
             if not self.coord_occupied(coord):
                 print('moving pawn {} to coordinate {}'.format(pawn.__str__(),coord.__str__()))
                 pawn.current_coord.set_occupied(False)
+                pawn.current_coord.occupied_val = None
                 self.occupied_coords.remove(pawn.current_coord)
                 self.occupied_coords.append(coord)
                 coord.set_occupied(True)
+                coord.occupied_val = pawn
                 return coord
             else:
                 raise CoordOccupiedException('Coord {} is already occupied, cannot move pawn'.format(coord.__str__()))
@@ -102,15 +130,18 @@ class GridEnvironment:
         return [x for x in self.coords if x == coord][0]
     
     def print_board(self) -> str:
-        print_string = '\n'+'----'*self.rows + '\n'
+        padding = '  0  |'
+        
+        print_string = '\n'+'-'*len(padding)*self.rows + '\n'
         for x_coord in range(self.columns):
             print_string+='|'
             for y_coord in range(self.rows):
                 if self.coord_occupied(self._get_coord(Coord(x_coord, y_coord))):
-                    print_string+=' 1 |'
+                    pawn = self._get_coord(Coord(x_coord, y_coord)).get_value()
+                    print_string+=' {} |'.format(pawn.name)
                 else:
-                    print_string+=' 0 |'
-            print_string+='\n'+'----'*self.rows + '\n'
+                    print_string+=padding
+            print_string+='\n'+'-'*len(padding)*self.rows + '\n'
         return print_string
         
     

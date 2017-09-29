@@ -11,11 +11,16 @@ from GridAbstractions import GridEnvironment, GridPawn, CoordOccupiedException, 
 from Coordinate import Coord
 from Predator import Predator
 
-class GridPawnEnvironmentTest(unittest.TestCase):
+class PredatorTest(unittest.TestCase):
     
     def setUp(self):
         self.env = GridEnvironment()
         
     def test_add_single_predator(self):
         pred1 = Predator('1', Coord(0,0), self.env, 3)
+        pred1.simple_hunt()
+        
+        
+if __name__ == '__main__':
+    unittest.main()
         

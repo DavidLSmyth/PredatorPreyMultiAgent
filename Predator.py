@@ -4,6 +4,9 @@ Created on Wed Sep 27 12:27:28 2017
 
 @author: 13383861
 """
+
+import operator
+
 from GridPawnEnvironmentTest import GridPawn, GridEnvironment
 from Prey import Prey
 from Coordinate import Coord
@@ -12,7 +15,7 @@ class Predator(GridPawn):
     def __init__(self, name, coordinate: Coord, environment: GridEnvironment, perception_radius = 3):
         '''Creates a predator that can pervieve 3 blocks NESW. If anything comes into range while the predator is alive, it knows
         that it exists but may not be able to keep track of its position if the predator moves out of perception range.'''
-        super().__init__(coordinate, environment)
+        super().__init__(name,coordinate, environment)
         #no idea where prey is at first, no idea where other predators are either
         self._beliefs = {'prey': {}, 'other_pred_pos':{}}
         self.perception_radius = perception_radius
@@ -31,7 +34,15 @@ class Predator(GridPawn):
     def simple_hunt(self):
         '''For this 'turn', predator has already perceived environment and received messages from other predators'''
         #identify which prey is closest
-        closest_prey = self._beliefs['prey']
+        prey_coords = self._beliefs['prey']
+        nearest_prey_coords = Coord(self.env.columns,self.env.rows).get_dist(Coord(0,0))
+        nearest_prey = None
+        print('beliefs: ',self._beliefs)
+        print(sorted(self._beliefs.items(), key = lambda x: x[1].get_dist(self)))
+        for prey_key, prey_value in self._beliefs['prey'].items():
+            if prey_value.get_dist(self) <= nearest_prey_coords:
+                nearest_prey = prey_key
+        #now hunt prey_key
        
 
 #    def perceive_grid_coord(self, coord:Coord):

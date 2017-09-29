@@ -20,7 +20,7 @@ class TestCoordinate(unittest.TestCase):
         
     def test_str(self):
         new_coord = Coord(1,1)
-        self.assertEqual(new_coord.__str__(), str(new_coord.get_x())+str(new_coord.get_y()))
+        self.assertEqual(new_coord.__str__(), str(new_coord.get_x())+','+str(new_coord.get_y()))
         
     def test_y(self):
         new_coord = Coord(1,1)
@@ -34,6 +34,7 @@ class TestCoordinate(unittest.TestCase):
         coord3 = Coord(10,10)
         self.assertEqual(coord1.get_dist(coord2), 2)
         self.assertEqual(coord1.get_dist(coord3), 18)
+        self.assertEqual(coord3.get_dist(None),None)
         
         
 if __name__ == '__main__':

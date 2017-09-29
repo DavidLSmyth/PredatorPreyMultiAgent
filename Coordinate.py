@@ -29,7 +29,10 @@ class Coord:
 
     def get_dist(self,other_coord):
         '''returns the Manhattan distance from current Coord to other Coord'''
-        return abs(self.get_x() - other_coord.get_x()) + abs(self.get_y() - other_coord.get_y())
+        if(other_coord):
+            return abs(self.get_x() - other_coord.get_x()) + abs(self.get_y() - other_coord.get_y())
+        else:
+            return None
         
     def get_x(self):
         return self._x

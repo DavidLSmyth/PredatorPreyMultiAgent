@@ -27,6 +27,10 @@ class Coord:
     def __repr__(self):
         return 'Coord({},{},{},{})'.format(self.get_x(), self.get_y(), self._occupied, self.occupied_val)
 
+    def get_dist(self,other_coord):
+        '''returns the Manhattan distance from current Coord to other Coord'''
+        return abs(self.get_x() - other_coord.get_x()) + abs(self.get_y() - other_coord.get_y())
+        
     def get_x(self):
         return self._x
     

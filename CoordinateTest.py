@@ -28,6 +28,13 @@ class TestCoordinate(unittest.TestCase):
         new_coord.set_y(5)
         self.assertEqual(new_coord.get_y(), 5)
         
+    def test_get_dist(self):
+        coord1 = Coord(1,1)
+        coord2 = Coord(2,2)
+        coord3 = Coord(10,10)
+        self.assertEqual(coord1.get_dist(coord2), 2)
+        self.assertEqual(coord1.get_dist(coord3), 18)
+        
         
 if __name__ == '__main__':
     unittest.main()

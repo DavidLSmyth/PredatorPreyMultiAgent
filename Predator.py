@@ -16,46 +16,62 @@ class Predator(GridPawn):
         #no idea where prey is at first, no idea where other predators are either
         self._beliefs = {'prey': {}, 'other_pred_pos':{}}
         self.perception_radius = perception_radius
-        self.perceived_prey_position = None
         self.name = 'Pd'+name
     
     def actuate(self):
        '''Does something to the environment'''
-       pass
+       #first perceive the environment
+       self.perceive()
+       #recieve any messages from other predators
+       self.recieve_message()
+       #now implement a strategy to hunt the prey
+       self.implement_strategy()
+       
+    
+    def simple_hunt(self):
+        '''For this 'turn', predator has already perceived environment and received messages from other predators'''
+        #identify which prey is closest
+        closest_prey = self._beliefs['prey']
+       
 
-    def perceive_grid_coord(self, coord:Coord):
-        grid_coord = self.environment._get_coord(coord)
-        if grid_coord.get_occupied():
-            if isinstance(grid_coord.occupied_val, Prey):
-                self.beliefs['prey_pos'] = grid_coord
-            elif isinstance(grid_coord.occupied_val, Predator):
-                self.beliefs['other_pred_pos'][grid_coord.occupied_val] = grid_coord.occupied_val.current_coord
-                
+#    def perceive_grid_coord(self, coord:Coord):
+#        grid_coord = self.environment._get_coord(coord)
+#        if grid_coord.get_occupied():
+#            if isinstance(grid_coord.occupied_val, Prey):
+#                self.beliefs['prey_pos'] = grid_coord
+#            elif isinstance(grid_coord.occupied_val, Predator):
+#                self.beliefs['other_pred_pos'][grid_coord.occupied_val] = grid_coord.occupied_val.current_coord
+#                
             
-    def grid_pawn_in_radius(self, pawn:GridPawn):
-        if pawn.current_coord._x-3<=self.current_coord._x <= coord._x +3:
-            if coord._y-3<=self.current_coord._y<=coord._y+3:
-                return True
-            else:
-                return False
+#    def grid_pawn_in_radius(self, pawn:GridPawn):
+#        if pawn.current_coord._x-3<=self.current_coord._x <= coord._x +3:
+#            if coord._y-3<=self.current_coord._y<=coord._y+3:
+#                return True
+#            else:
+#                return False
             
             
         
-        
-    def perceive(self):
-        '''Updates prey/other predator position if prey is within perception_radius squares'''
-        for grid_pawn in self.env.grid_pawns:
-            if isinstance(grid_pawn, Predator):
-                #update position if detected in radius
-                if self.coord_in_radius(grid_pawn):
-                    self.beliefs['other_pred_pos'][grid_pawn] = grid_pawn.current_coord
-                else:
-                    #if predator grid pawn has already been detected, update position to unkown
-                    if grid_pawn in self._beliefs['other_pred_pos']:
-                        self._beliefs['other_pred_pos'][grid_pawn] = None
-                        
-            elif isinstance(grid_pawn, Prey):
-                 if self.coord_in_radius(grid_pawn)       
+#        
+#    def perceive(self):
+#        '''Updates prey/other predator position if prey is within perception_radius squares'''
+#        for grid_pawn in self.env.grid_pawns:
+#            if isinstance(grid_pawn, Predator):
+#                #update position if detected in radius
+#                if self.coord_in_radius(grid_pawn):
+#                    self.beliefs['other_pred_pos'][grid_pawn] = grid_pawn.current_coord
+#                else:
+#                    #if predator grid pawn has already been detected, update position to unkown
+#                    if grid_pawn in self._beliefs['other_pred_pos']:
+#                        self._beliefs['other_pred_pos'][grid_pawn] = None
+#                        
+#            elif isinstance(grid_pawn, Prey):
+#                 if self.coord_in_radius(grid_pawn):
+#                     self.beliefs['other_pred_pos'][grid_pawn] = grid_pawn.current_coord
+#                 else:
+#                    #if prey grid pawn has already been detected, update position to unkown
+#                    if grid_pawn in self._beliefs['other_pred_pos']:
+#                        self._beliefs['other_pred_pos'][grid_pawn] = None
          
         
         

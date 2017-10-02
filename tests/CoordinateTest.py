@@ -7,7 +7,7 @@ Created on Mon Sep 25 14:52:42 2017
 """
 import unittest
 
-from Coordinate import Coord
+from PredatorPreyMultiAgent.Coordinate import Coord
 
 class TestCoordinate(unittest.TestCase):
     

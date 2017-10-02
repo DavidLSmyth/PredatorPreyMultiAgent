@@ -7,7 +7,7 @@ Created on Wed Sep 27 12:27:28 2017
 
 import operator
 
-from GridPawnEnvironmentTest import GridPawn, GridEnvironment
+from GridAbstractions import GridPawn, GridEnvironment
 from Prey import Prey
 from Coordinate import Coord
 

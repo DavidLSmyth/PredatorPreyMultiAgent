@@ -176,7 +176,7 @@ class GridEnvironment:
         return list(filter(lambda x: coord.get_dist(x) == 1, self.get_unoccupied_coords()))
         
     
-    def bfs(self, start_coord: Coord, end_coord: Coord, get_neighbor_function):
+    def bfs(self, start_coord: Coord, end_coord: Coord, get_neighbor_function = None):
         '''Returns the shortest path(s) from one coordinate to another. Search coords are given all all available coords.
         Params: start_coord -> valid grid coordinate which 
         '''
@@ -184,6 +184,9 @@ class GridEnvironment:
             pass
         else:
             raise Exception('Coordinates provided arent valid: {} {}'.format(start_coord, end_coord))
+        
+        if not get_neighbor_function:
+            get_neighbor_function = self.get_neighbor_coords
         
         dist_to_end = 0
         #start with start_coord in queue
@@ -201,7 +204,7 @@ class GridEnvironment:
             print('Exploring current node: ',current_node)
             print('dist_to_end: {}'.format(dist_to_end))
             #for each of the current node's neighbors:
-            for node in self.get_neighbor_coords(current_node):
+            for node in get_neighbor_function(current_node):
                 #if the node has not yet been visited, append the node to the queue
                 if node not in visited_nodes and node not in Q:
                     predecessors[node.__str__()] = current_node.__str__()

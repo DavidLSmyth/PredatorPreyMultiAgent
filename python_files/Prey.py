@@ -18,4 +18,4 @@ class Prey(GridPawnAgent):
         self.name = 'Py'+name
     
     def __repr__(self):
-        return('Prey({},{},{},{},{})'.format(self.name[-2:], self.current_coord, self.env, self.perception_radius, self.speed))
+        return('Prey({},{},{},{},{})'.format(self.name.replace('Py',''), self.current_coord, self.env, self.perception_radius, self.speed))

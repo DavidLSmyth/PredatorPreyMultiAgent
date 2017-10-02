@@ -20,7 +20,7 @@ class Predator(GridPawnAgent):
         self.name = 'Pd'+name
         
     def __repr__(self):
-        return('Predator({},{},{},{},{})'.format(self.name[-2:], self.current_coord, self.env, self.perception_radius, self.speed))
+        return('Predator({},{},{},{},{})'.format(self.name.replace('Pd',''), self.current_coord, self.env, self.perception_radius, self.speed))
             
     
     def actuate(self):
@@ -49,7 +49,16 @@ class Predator(GridPawnAgent):
                     perceived_nearest_prey = prey_key
         print(self.__str__(), 'detected nearest prey: {} - seaching for shortest path to prey'.format(perceived_nearest_prey.__str__()))
         return perceived_nearest_prey
-        
+    
+    def get_best_move(self, prey_location_details):
+        '''Gives the best move given a shortest path to prey'''
+        path_to_prey = prey_location_details[1]
+        possible_moves = list(filter(lambda x: x in self.find_available_moves(), path_to_prey))
+        print('possible predator moves: {}'.format(possible_moves))
+        #best move is the one that gets predator as close as possible to prey
+        best_move_index = [self.current_coord.get_dist(x) for x in possible_moves].index(max([self.current_coord.get_dist(x) for x in possible_moves]))
+        print('moving to square {}'.format(possible_moves[best_move_index]))
+        return possible_moves[best_move_index]
        
     
     def simple_hunt_strategy(self):
@@ -58,15 +67,9 @@ class Predator(GridPawnAgent):
             For any given predator, find the nearest prey and chase it down.'''
         nearest_prey = self.find_nearest_prey()
         if(nearest_prey):
-            prey_details = self.get_prey_path(nearest_prey)
-            if prey_details:
-                path_to_prey = prey_details[1]
-                possible_moves = list(filter(lambda x: x in self.find_available_moves(), path_to_prey))
-                print('possible predator moves: {}'.format(possible_moves))
-                #best move is the one that gets predator as close as possible to prey
-                best_move_index = [self.current_coord.get_dist(x) for x in possible_moves].index(max([self.current_coord.get_dist(x) for x in possible_moves]))
-                print('moving to square {}'.format(possible_moves[best_move_index]))
-                self.move(possible_moves[best_move_index])
+            prey_location_details = self.get_prey_path(nearest_prey)
+            if prey_location_details:
+                self.move(self.get_best_move(prey_location_details))
             else:
                 print('could not find a path from {} to nearest prey {}'.format(self,nearest_prey))
         else:
@@ -78,7 +81,7 @@ class Predator(GridPawnAgent):
         '''Given a detected prey, chase them down via the shortest path to the prey.
         Returns the shortest path from predator to nearest prey'''
         if isinstance(prey, Prey) and prey in self._beliefs:
-            return self.env.bfs(self.current_coord, prey.current_coord, self.env.get_neighbor_coords)
+            return self.env.bfs(self.current_coord, prey.current_coord)
         else:
             raise Exception('Prey {} not in self._beliefs'.format(prey))
 

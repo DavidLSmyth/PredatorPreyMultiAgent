@@ -14,8 +14,12 @@ class Coord:
         self._occupied = occupied
         self.occupied_val = occupied_val
         
+    def __lt__(self,other):
+        return [True if self.get_dist(other)>0 else False]
     
     def __eq__(self, other):
+        '''Equality is taken in terms of x coords and y coords, nothing specified for 
+        occupancy status'''
         if isinstance(other, Coord):
             if(other.get_x() == self.get_x() and other.get_y() == self.get_y()):
                 return True
@@ -29,10 +33,10 @@ class Coord:
 
     def get_dist(self,other_coord):
         '''returns the Manhattan distance from current Coord to other Coord'''
-        if(other_coord):
+        if(isinstance(other_coord, Coord)):
             return abs(self.get_x() - other_coord.get_x()) + abs(self.get_y() - other_coord.get_y())
         else:
-            return None
+            raise NotImplementedError('Cannot get the distance of object of type {} to object of type{}'.format(type(self), type(other_coord)))
         
     def get_x(self):
         return self._x

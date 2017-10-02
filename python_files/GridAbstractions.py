@@ -1,4 +1,4 @@
-from Coordinate import Coord
+from python_files.Coordinate import Coord
 
 class GridPawn:
     '''An abstract class which creates a pawn on the grid and allows the pawn to move around on the grid. The pawn may only exist on the grid'''
@@ -13,6 +13,8 @@ class GridPawn:
             self.current_coord = env_coord
     
     def move(self, coord)->'Bool':
+        '''Attempts to move the GridPawn to the given coordinate. Returns true if successfully moved
+        otherwise returns false'''
         try:
             env_coord = self.env.move_pawn(self,coord)
             if env_coord:
@@ -27,25 +29,44 @@ class GridPawn:
     def __repr__(self):
         return self.name+str(self.current_coord)
             
+    
 class GridPawnAgent(GridPawn):
-    def __init__(self, name, coord: Coord, environment, perception_radius = 3):
+    def __init__(self, name, coord: Coord, environment, perception_radius = 3, speed = 1):
         super().__init__(name, coord, environment)
         #a dicionary of beliefs about current environment - holds other pawns and percieved position
-        self.beliefs = {}
+        self._beliefs = {}
         self.perception_radius = perception_radius
         self.name = 'Pa'+name
+        #max number of squares predator can move in any given direction in one turn
+        self.speed = speed
+        
+    def _find_available_squares(self, radius):
+        '''returns all unoccupied coordinates of distance less than radius. Auxiliary method'''
+        return list(filter(lambda x: self.current_coord.get_dist(x)<=radius, self.env.get_unoccupied_coords()))
+    
+    def find_available_moves(self):
+        '''returns all unoccupied coordinates of distance less than speed'''
+        return(self._find_available_squares(self.speed))
+    
+    def move(self, coord:Coord):
+        if coord in self.find_available_moves():
+            super().move(coord)
+        else:
+            raise Exception('Invalid move')
     
     def perceive(self):
         '''Updates prey/other predator position if prey is within perception_radius squares'''
         for grid_pawn in list(filter(lambda x: x!=self,self.env.grid_pawns)):
             if self.grid_pawn_in_radius(grid_pawn):
-                #agent knows where grid pawn is
-                self.beliefs[grid_pawn] = grid_pawn.current_coord
+                #agent knows where other grid pawn is
+                self._beliefs[grid_pawn] = grid_pawn.current_coord
             else:
                 #agent still knows about grid_pawn but doesn't know its exact position
-                self.beliefs[grid_pawn] = None
+                self._beliefs[grid_pawn] = None
+        
                      
     def grid_pawn_in_radius(self, pawn:GridPawn):
+        '''Returns true if there is another grid pawn in the current grid pawn's perception radius'''
         if pawn.current_coord._x-self.perception_radius<=self.current_coord._x <= pawn.current_coord._x +self.perception_radius:
             if pawn.current_coord._y-self.perception_radius<=self.current_coord._y<=pawn.current_coord._y+self.perception_radius:
                 return True
@@ -146,7 +167,54 @@ class GridEnvironment:
                     print_string+=padding
             print_string+='\n'+'-'*len(padding)*self.rows + '\n'
         return print_string
+    
+    def get_neighbor_coords(self, coord:Coord):
+        '''returns all non-diagonal adjacent nodes'''
+        return list(filter(lambda x: coord.get_dist(x) == 1, self.get_unoccupied_coords()))
         
+    
+    def bfs(self, start_coord: Coord, end_coord: Coord):
+        '''Returns the shortest path(s) from one coordinate to another'''
+        dist_to_end = 0
+        #start with start_coord in queue
+        Q = [start_coord]
+        visited_nodes = []
+        #{coord: predecessor}
+        #need to use repr because Coord is not hashable
+        predecessors = {start_coord.__repr__(): None}
+        
+        while Q != [] and end_coord not in visited_nodes:
+            #if we have already visited end_coord, it will be a shortest path since 
+            #bfs works in layers
+            print('Q: ', Q)
+            current_node = Q.pop()
+            print('Exploring current node: ',current_node)
+            #for each of the current node's neighbors:
+            for node in self.get_neighbor_coords(current_node):
+                #if the node has not yet been visited, append the node to the queue
+                if node not in visited_nodes:
+                    predecessors[node.__repr__()] = current_node.__repr__()
+                    print('enqueing {}'.format(node))
+                    Q.insert(0,node)
+                #mark current node as visited
+                visited_nodes.append(current_node)
+                #distance_to_end increments when a node has been visited
+                dist_to_end += 1
+        
+        
+        
+        if end_coord in visited_nodes:
+            #reconstruct path
+            path = [end_coord.__repr__()]
+            current_predecessor = predecessors[end_coord.__repr__()]
+            while current_predecessor != None:
+                path.append(current_predecessor)
+                current_predecessor  = predecessors[current_predecessor]
+            return path
+        else:
+            #no path found
+            return False
+            
     
 class CoordOutOfBoundsException(Exception):
     pass

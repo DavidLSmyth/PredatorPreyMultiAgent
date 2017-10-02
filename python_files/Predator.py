@@ -7,19 +7,19 @@ Created on Wed Sep 27 12:27:28 2017
 
 import operator
 
-from GridAbstractions import GridPawn, GridEnvironment
-from Prey import Prey
-from Coordinate import Coord
+from python_files.GridAbstractions import GridEnvironment, GridPawnAgent
+from python_files.Prey import Prey
+from python_files.Coordinate import Coord
 
-class Predator(GridPawn):
-    def __init__(self, name, coordinate: Coord, environment: GridEnvironment, perception_radius = 3):
+class Predator(GridPawnAgent):
+    def __init__(self, name, coordinate: Coord, environment: GridEnvironment, perception_radius = 3, speed = 1):
         '''Creates a predator that can pervieve 3 blocks NESW. If anything comes into range while the predator is alive, it knows
         that it exists but may not be able to keep track of its position if the predator moves out of perception range.'''
         super().__init__(name,coordinate, environment)
         #no idea where prey is at first, no idea where other predators are either
-        self._beliefs = {'prey': {}, 'other_pred_pos':{}}
         self.perception_radius = perception_radius
         self.name = 'Pd'+name
+            
     
     def actuate(self):
        '''Does something to the environment'''
@@ -30,20 +30,44 @@ class Predator(GridPawn):
        #now implement a strategy to hunt the prey
        self.implement_strategy()
        
-    
-    def simple_hunt(self):
-        '''For this 'turn', predator has already perceived environment and received messages from other predators'''
-        #identify which prey is closest
-        prey_coords = self._beliefs['prey']
-        nearest_prey_coords = Coord(self.env.columns,self.env.rows).get_dist(Coord(0,0))
-        nearest_prey = None
+    def find_nearest_prey(self):
+        '''returns the prey and believed coordinates of the nearest prey, None if no prey found in perveive radius'''
+        print('{} searching for nearest prey'.format(self))
+        #initialise nearest_prey_coords as the furthest possible distance in the grid
+        perceived_nearest_prey_dist = Coord(self.env.columns,self.env.rows).get_dist(Coord(0,0))
+        perceived_nearest_prey = None
         print('beliefs: ',self._beliefs)
-        print(sorted(self._beliefs.items(), key = lambda x: x[1].get_dist(self)))
-        for prey_key, prey_value in self._beliefs['prey'].items():
-            if prey_value.get_dist(self) <= nearest_prey_coords:
-                nearest_prey = prey_key
-        #now hunt prey_key
+        #print(sorted(self._beliefs.items(), key = lambda x: x[1].get_dist(self)))
+        for prey_key, prey_value in self._beliefs.items():
+            #if the distance from the nearest prey to the predator is less than the current
+            #nearest prey, update current_prey
+            print('prey_value: ',prey_value)
+            if isinstance(prey_key, Prey) and isinstance(prey_value, Coord):
+                if prey_value.get_dist(self.current_coord) <= perceived_nearest_prey_dist:
+                    perceived_nearest_prey = prey_key
+        print(self.__str__(), 'detected nearest prey: {} - seaching for shortest path to prey'.format(perceived_nearest_prey.__str__()))
+        return perceived_nearest_prey
+        
        
+    
+    def simple_hunt_strategy(self):
+        '''For this 'turn', predator has already perceived environment and received messages from other predators. The simple hunt 
+        strategy is implemented as follows: 
+            For any given predator, find the nearest prey and chase it down.'''
+        nearest_prey = self.find_nearest_prey()
+        if(nearest_prey):
+            self.chase_prey(nearest_prey)
+        else:
+            #move to a random unoccupied square
+            pass
+        
+    def chase_prey(self, prey):
+        '''Given a detected prey, chase them down via the shortest path to the prey. Currently doesn't take into account that other 
+        predators can get in the way. Returns the shortest path from predator to nearest prey'''
+        if isinstance(prey, Prey) and prey in self._beliefs:
+            return self.env.bfs(self.current_coord, prey.current_coord)
+        else:
+            raise Exception('Prey {} not in self._beliefs'.format(prey))
 
 #    def perceive_grid_coord(self, coord:Coord):
 #        grid_coord = self.environment._get_coord(coord)

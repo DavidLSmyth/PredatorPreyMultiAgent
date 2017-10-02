@@ -6,8 +6,8 @@ Created on Wed Sep 27 14:44:05 2017
 """
 #test module for Environment and grid pawn
 import unittest
-from GridAbstractions import GridEnvironment, GridPawn, CoordOccupiedException, CoordOutOfBoundsException, GridPawnAgent
-from Coordinate import Coord
+from python_files.GridAbstractions import GridEnvironment, GridPawn, GridPawnAgent
+from python_files.Coordinate import Coord
 
 class GridPawnEnvironmentTest(unittest.TestCase):
     
@@ -20,6 +20,14 @@ class GridPawnEnvironmentTest(unittest.TestCase):
         self.assertEqual(self.env.get_unoccupied_coords(), self.env.coords)
         self.assertEqual(self.env.get_occupied_coords(), [])
         self.assertEqual(self.env.grid_pawns,[])
+        self.assertEqual(self.env.get_neighbor_coords(Coord(0,0)), [Coord(0,1), Coord(1,0)])
+        self.assertTrue(all(list(filter(lambda x: x in self.env.get_neighbor_coords(Coord(3,3)), [Coord(3,2),Coord(3,4),Coord(2,3),Coord(4,3)]))))
+        
+    def test_bfs(self):
+        print('\n\n\n\n\n')
+        print(self.env.bfs(Coord(0,0), Coord(0,3)))
+        print('bfs result: ', self.env.bfs(Coord(0,0), Coord(3,3)))
+        self.assertEqual(self.env.bfs(Coord(0,0), Coord(0,3)), list(map(lambda x: repr(x), [Coord(0,3), Coord(0,2), Coord(0,1), Coord(0,0)])))
         
     def test_add_single_pawn(self):
         pawn1 = GridPawn('1',Coord(0,0), self.env)
@@ -64,30 +72,30 @@ class GridPawnEnvironmentTest(unittest.TestCase):
         self.assertEqual(self.env.grid_pawns, [pawn1,pawn2, pawn3])
         self.assertEqual(self.env.get_occupied_coords(), [self.env._get_coord(Coord(0,0)),self.env._get_coord(Coord(5,5)), self.env._get_coord(Coord(5,6))])
         
-        pawn1.move(Coord(1,1))
+        pawn1.move(Coord(1,0))
         self.assertFalse(self.env._get_coord(Coord(0,0)) in self.env.occupied_coords)
         print(self.env.print_board())
         
         
     def test_perceive_pawnAgent(self):
-        pawn1 = GridPawnAgent('1', Coord(4,4), self.env)
+        pawn1 = GridPawnAgent('1', Coord(4,4), self.env, speed = 10)
         pawn2 = GridPawnAgent('1', Coord(6,6), self.env)
         pawn1.perceive()
-        self.assertTrue(pawn1.beliefs, {})
+        self.assertTrue(pawn1._beliefs, {})
         pawn1.perceive()
-        self.assertEqual(pawn1.beliefs, {pawn2: self.env._get_coord(Coord(6,6))})
-        print(pawn1.beliefs)
-        print(pawn2.beliefs)
-        self.assertTrue(pawn2.beliefs == {})
+        self.assertEqual(pawn1._beliefs, {pawn2: self.env._get_coord(Coord(6,6))})
+        print(pawn1._beliefs)
+        print(pawn2._beliefs)
+        self.assertTrue(pawn2._beliefs == {})
         pawn2.perceive()
-        self.assertEqual(pawn2.beliefs, {pawn1:self.env._get_coord(Coord(4,4))})
+        self.assertEqual(pawn2._beliefs, {pawn1:self.env._get_coord(Coord(4,4))})
         
         pawn1.move(Coord(0,0))
         pawn1.perceive()
-        self.assertEqual(pawn1.beliefs, {pawn2:None})
-        self.assertEqual(pawn2.beliefs, {pawn1:self.env._get_coord(Coord(4,4))})
+        self.assertEqual(pawn1._beliefs, {pawn2:None})
+        self.assertEqual(pawn2._beliefs, {pawn1:self.env._get_coord(Coord(4,4))})
         pawn2.perceive()
-        self.assertEqual(pawn2.beliefs, {pawn1:None})
+        self.assertEqual(pawn2._beliefs, {pawn1:None})
         
         
 if __name__ == '__main__':

@@ -9,6 +9,7 @@ Created on Fri Sep 29 12:06:38 2017
 import unittest
 import sys
 #user defined
+import python_files
 from PredatorTest import PredatorTest
 from GridPawnEnvironmentTest import GridPawnEnvironmentTest
 from CoordinateTest import TestCoordinate

@@ -7,7 +7,7 @@ Created on Mon Sep 25 14:52:42 2017
 """
 import unittest
 
-from PredatorPreyMultiAgent.Coordinate import Coord
+from python_files.Coordinate import Coord
 
 class TestCoordinate(unittest.TestCase):
     
@@ -34,7 +34,8 @@ class TestCoordinate(unittest.TestCase):
         coord3 = Coord(10,10)
         self.assertEqual(coord1.get_dist(coord2), 2)
         self.assertEqual(coord1.get_dist(coord3), 18)
-        self.assertEqual(coord3.get_dist(None),None)
+        with self.assertRaises(NotImplementedError):
+            coord3.get_dist(None)
         
         
 if __name__ == '__main__':

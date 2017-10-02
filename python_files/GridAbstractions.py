@@ -21,7 +21,7 @@ class GridPawn:
                 self.current_coord = env_coord
                 return True
         except (CoordOccupiedException, CoordOccupiedException) as e:
-            return False
+            raise Exception('Invalid move')
             
     def __str__(self):
         return 'GridPawn({},{})'.format(self.name,self.current_coord)
@@ -82,6 +82,9 @@ class GridEnvironment:
         self.coords = [Coord(x,y) for x in range(rows) for y in range(columns)]
         self.occupied_coords = []
         self.grid_pawns = []
+        
+    def __repr__(self):
+        return 'GridEnvironment({},{})'.format(self.rows, self.columns)
     
     def get_occupied_coords(self):
         return self.occupied_coords
@@ -173,15 +176,22 @@ class GridEnvironment:
         return list(filter(lambda x: coord.get_dist(x) == 1, self.get_unoccupied_coords()))
         
     
-    def bfs(self, start_coord: Coord, end_coord: Coord):
-        '''Returns the shortest path(s) from one coordinate to another'''
+    def bfs(self, start_coord: Coord, end_coord: Coord, get_neighbor_function):
+        '''Returns the shortest path(s) from one coordinate to another. Search coords are given all all available coords.
+        Params: start_coord -> valid grid coordinate which 
+        '''
+        if self.verify_valid_coord(start_coord) and self.verify_valid_coord(end_coord):
+            pass
+        else:
+            raise Exception('Coordinates provided arent valid: {} {}'.format(start_coord, end_coord))
+        
         dist_to_end = 0
         #start with start_coord in queue
         Q = [start_coord]
         visited_nodes = []
         #{coord: predecessor}
         #need to use repr because Coord is not hashable
-        predecessors = {start_coord.__repr__(): None}
+        predecessors = {start_coord.__str__(): None}
         
         while Q != [] and end_coord not in visited_nodes:
             #if we have already visited end_coord, it will be a shortest path since 
@@ -189,32 +199,36 @@ class GridEnvironment:
             print('Q: ', Q)
             current_node = Q.pop()
             print('Exploring current node: ',current_node)
+            print('dist_to_end: {}'.format(dist_to_end))
             #for each of the current node's neighbors:
             for node in self.get_neighbor_coords(current_node):
                 #if the node has not yet been visited, append the node to the queue
-                if node not in visited_nodes:
-                    predecessors[node.__repr__()] = current_node.__repr__()
+                if node not in visited_nodes and node not in Q:
+                    predecessors[node.__str__()] = current_node.__str__()
                     print('enqueing {}'.format(node))
                     Q.insert(0,node)
                 #mark current node as visited
                 visited_nodes.append(current_node)
                 #distance_to_end increments when a node has been visited
-                dist_to_end += 1
         
         
         
         if end_coord in visited_nodes:
             #reconstruct path
-            path = [end_coord.__repr__()]
-            current_predecessor = predecessors[end_coord.__repr__()]
+            path = [self._get_coord(eval('Coord('+end_coord.__str__()+')'))]
+            current_predecessor = predecessors[end_coord.__str__()]
+            print(path)
             while current_predecessor != None:
-                path.append(current_predecessor)
+                print(current_predecessor)
+                #print(self._get_coord(Coord(current_predecessor.split(',')[0],current_predecessor.split(',')[0])))
+                path.append(self._get_coord(eval('Coord('+current_predecessor+')')))
                 current_predecessor  = predecessors[current_predecessor]
-            return path
+                dist_to_end+=1
+            return (dist_to_end,path)
         else:
             #no path found
             return False
-            
+                
     
 class CoordOutOfBoundsException(Exception):
     pass

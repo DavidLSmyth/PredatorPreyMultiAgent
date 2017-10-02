@@ -5,7 +5,6 @@ Created on Wed Sep 27 12:27:28 2017
 @author: 13383861
 """
 
-import operator
 
 from python_files.GridAbstractions import GridEnvironment, GridPawnAgent
 from python_files.Prey import Prey
@@ -15,10 +14,13 @@ class Predator(GridPawnAgent):
     def __init__(self, name, coordinate: Coord, environment: GridEnvironment, perception_radius = 3, speed = 1):
         '''Creates a predator that can pervieve 3 blocks NESW. If anything comes into range while the predator is alive, it knows
         that it exists but may not be able to keep track of its position if the predator moves out of perception range.'''
-        super().__init__(name,coordinate, environment)
+        super().__init__(name,coordinate, environment, speed)
         #no idea where prey is at first, no idea where other predators are either
         self.perception_radius = perception_radius
         self.name = 'Pd'+name
+        
+    def __repr__(self):
+        return('Predator({},{},{},{},{})'.format(self.name[-2:], self.current_coord, self.env, self.perception_radius, self.speed))
             
     
     def actuate(self):
@@ -28,7 +30,7 @@ class Predator(GridPawnAgent):
        #recieve any messages from other predators
        self.recieve_message()
        #now implement a strategy to hunt the prey
-       self.implement_strategy()
+       self.simple_hunt_strategy()
        
     def find_nearest_prey(self):
         '''returns the prey and believed coordinates of the nearest prey, None if no prey found in perveive radius'''
@@ -56,16 +58,27 @@ class Predator(GridPawnAgent):
             For any given predator, find the nearest prey and chase it down.'''
         nearest_prey = self.find_nearest_prey()
         if(nearest_prey):
-            self.chase_prey(nearest_prey)
+            prey_details = self.get_prey_path(nearest_prey)
+            if prey_details:
+                path_to_prey = prey_details[1]
+                possible_moves = list(filter(lambda x: x in self.find_available_moves(), path_to_prey))
+                print('possible predator moves: {}'.format(possible_moves))
+                #best move is the one that gets predator as close as possible to prey
+                best_move_index = [self.current_coord.get_dist(x) for x in possible_moves].index(max([self.current_coord.get_dist(x) for x in possible_moves]))
+                print('moving to square {}'.format(possible_moves[best_move_index]))
+                self.move(possible_moves[best_move_index])
+            else:
+                print('could not find a path from {} to nearest prey {}'.format(self,nearest_prey))
         else:
             #move to a random unoccupied square
-            pass
+            print('could not find prey')
+            
         
-    def chase_prey(self, prey):
-        '''Given a detected prey, chase them down via the shortest path to the prey. Currently doesn't take into account that other 
-        predators can get in the way. Returns the shortest path from predator to nearest prey'''
+    def get_prey_path(self, prey):
+        '''Given a detected prey, chase them down via the shortest path to the prey.
+        Returns the shortest path from predator to nearest prey'''
         if isinstance(prey, Prey) and prey in self._beliefs:
-            return self.env.bfs(self.current_coord, prey.current_coord)
+            return self.env.bfs(self.current_coord, prey.current_coord, self.env.get_neighbor_coords)
         else:
             raise Exception('Prey {} not in self._beliefs'.format(prey))
 

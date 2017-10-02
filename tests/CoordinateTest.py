@@ -6,7 +6,6 @@ Created on Mon Sep 25 14:52:42 2017
 @author: david
 """
 import unittest
-
 from python_files.Coordinate import Coord
 
 class TestCoordinate(unittest.TestCase):

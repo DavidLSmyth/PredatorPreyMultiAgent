@@ -25,9 +25,10 @@ class GridPawnEnvironmentTest(unittest.TestCase):
         
     def test_bfs(self):
         print('\n\n\n\n\n')
-        print(self.env.bfs(Coord(0,0), Coord(0,3)))
-        print('bfs result: ', self.env.bfs(Coord(0,0), Coord(3,3)))
-        self.assertEqual(self.env.bfs(Coord(0,0), Coord(0,3)), list(map(lambda x: repr(x), [Coord(0,3), Coord(0,2), Coord(0,1), Coord(0,0)])))
+        print('bfs result: ', self.env.bfs(Coord(0,0), Coord(3,3),self.env.get_neighbor_coords))
+        self.assertEqual(self.env.bfs(Coord(0,0), Coord(3,3), self.env.get_neighbor_coords)[0], 6)
+
+        self.assertEqual(self.env.bfs(Coord(0,0), Coord(0,3),self.env.get_neighbor_coords), (3,list(map(lambda x: self.env._get_coord(x), [Coord(0,3), Coord(0,2), Coord(0,1), Coord(0,0)]))))
         
     def test_add_single_pawn(self):
         pawn1 = GridPawn('1',Coord(0,0), self.env)
@@ -54,9 +55,9 @@ class GridPawnEnvironmentTest(unittest.TestCase):
         self.assertEqual(pawn1.current_coord, Coord(5,5))
         self.assertTrue(pawn1.current_coord in self.env.get_occupied_coords())
         pawn2.move(Coord(0,0))
-        print(pawn2)
         self.assertEqual(pawn2.current_coord, Coord(0,0))
-        self.assertFalse(pawn1.move(Coord(0,0)))
+        with self.assertRaises(Exception):
+            pawn1.move(Coord(0,0))
         self.assertTrue(pawn1.move(Coord(1,1)))
         
     def test_add_pawnAgent(self):

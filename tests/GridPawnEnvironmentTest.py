@@ -60,6 +60,11 @@ class GridPawnEnvironmentTest(unittest.TestCase):
             pawn1.move(Coord(0,0))
         self.assertTrue(pawn1.move(Coord(1,1)))
         
+    def test_pawnAgent_actuate(self):
+        pawn1 = GridPawnAgent('1',Coord(0,0), self.env)
+        with self.assertRaises(NotImplementedError):
+            pawn1.actuate()
+        
     def test_add_pawnAgent(self):
         pawn1 = GridPawnAgent('1',Coord(0,0), self.env)
         self.assertEqual(self.env.occupied_coords, [self.env._get_coord(Coord(0,0))])

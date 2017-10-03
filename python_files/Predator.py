@@ -11,56 +11,62 @@ from python_files.Prey import Prey
 from python_files.Coordinate import Coord
 
 class Predator(GridPawnAgent):
-    def __init__(self, name, coordinate: Coord, environment: GridEnvironment, perception_radius = 3, speed = 1):
-        '''Creates a predator that can pervieve 3 blocks NESW. If anything comes into range while the predator is alive, it knows
-        that it exists but may not be able to keep track of its position if the predator moves out of perception range.'''
-        super().__init__(name,coordinate, environment, perception_radius = perception_radius, speed=speed)
+    def __init__(self, name, coordinate: Coord, environment: GridEnvironment,
+                 perception_radius=3, speed=1):
+        '''Creates a predator that can pervieve 3 blocks NESW. If anything comes
+        into range while the predator is alive, it knows that it exists but may
+        not be able to keep track of its position if the predator moves out of
+        perception range.'''
+        super().__init__(name, coordinate, environment,
+                         perception_radius=perception_radius, speed=speed)
         #no idea where prey is at first, no idea where other predators are either
-        self.perception_radius = perception_radius
         self.name = 'Pd'+name
-        
+        self.hunt_strategies = ['simple_hunt_strategy']
     def __repr__(self):
-        return('Predator({},{},{},{},{})'.format(self.name.replace('Pd',''), self.current_coord, self.env, self.perception_radius, self.speed))
-            
-    
-    def actuate(self):
-       '''Does something to the environment'''
-       #first perceive the environment
-       self.perceive()
-       #recieve any messages from other predators
-       self.recieve_message()
-       #now implement a strategy to hunt the prey
-       self.simple_hunt_strategy()
-       
+        return('Predator({},{},{},{},{})'.format(
+            self.name.replace('Pd', ''),
+            self.current_coord, self.env, self.perception_radius, self.speed))
+        
+    def implement_strategy(self, strategy_option: 'member of self.hunt_strategies' = None):
+        if strategy_option:
+            if strategy_option in self.hunt_strategies:
+                eval('self.'+strategy_option+'()')
+        else:
+            #execute default - ToDo
+            self.simple_hunt_strategy()
+
     def find_nearest_prey(self):
-        '''returns the prey and believed coordinates of the nearest prey, None if no prey found in perveive radius'''
+        '''returns the prey and believed coordinates of the nearest prey,
+        None if no prey found in perveive radius'''
         print('{} searching for nearest prey'.format(self))
         #initialise nearest_prey_coords as the furthest possible distance in the grid
-        perceived_nearest_prey_dist = Coord(self.env.columns,self.env.rows).get_dist(Coord(0,0))
+        perceived_nearest_prey_dist = Coord(self.env.columns, self.env.rows).get_dist(Coord(0, 0))
         perceived_nearest_prey = None
-        print('beliefs: ',self._beliefs)
+        print('beliefs: ', self._beliefs)
         #print(sorted(self._beliefs.items(), key = lambda x: x[1].get_dist(self)))
         for prey_key, prey_value in self._beliefs.items():
             #if the distance from the nearest prey to the predator is less than the current
             #nearest prey, update current_prey
-            print('prey_value: ',prey_value)
+            print('prey_value: ', prey_value)
             if isinstance(prey_key, Prey) and isinstance(prey_value, Coord):
                 if prey_value.get_dist(self.current_coord) <= perceived_nearest_prey_dist:
                     perceived_nearest_prey = prey_key
-        print(self.__str__(), 'detected nearest prey: {} - seaching for shortest path to prey'.format(perceived_nearest_prey.__str__()))
+        print(self.__str__(),
+              'detected nearest prey: {} - seaching for shortest path to prey'.format(
+                  perceived_nearest_prey.__str__()))
         return perceived_nearest_prey
-    
+
     def get_best_move(self, prey_location_details):
         '''Gives the best move given a shortest path to prey'''
         path_to_prey = prey_location_details[1]
         possible_moves = list(filter(lambda x: x in self.find_available_moves(), path_to_prey))
         print('possible predator moves: {}'.format(possible_moves))
-        #best move is the one that gets predator as close as possible to prey - this is as far down the detected shortest path to the prey as possible
+        #best move is the one that gets predator as close as possible to prey - 
+        #this is as far down the detected shortest path to the prey as possible
         best_move_index = [self.current_coord.get_dist(x) for x in possible_moves].index(max([self.current_coord.get_dist(x) for x in possible_moves]))
         print('moving to square {}'.format(possible_moves[best_move_index]))
         return possible_moves[best_move_index]
-       
-    
+
     def simple_hunt_strategy(self):
         '''For this 'turn', predator has already perceived environment and received messages from other predators. The simple hunt 
         strategy is implemented as follows: 
@@ -84,6 +90,15 @@ class Predator(GridPawnAgent):
             return self.env.bfs(self.current_coord, prey.current_coord)
         else:
             raise Exception('Prey {} not in self._beliefs'.format(prey))
+            
+            
+    def recieve_message(self):
+        '''Receives message from other predator(s)'''
+        pass
+    
+    def send_message(self):
+        '''sends message to other predator(s)'''
+        pass
 
 #    def perceive_grid_coord(self, coord:Coord):
 #        grid_coord = self.environment._get_coord(coord)
@@ -126,10 +141,3 @@ class Predator(GridPawnAgent):
          
         
         
-    def recieve_message(self):
-        '''Receives message from other predator(s)'''
-        pass
-    
-    def send_message(self):
-        '''sends message to other predator(s)'''
-        pass

@@ -75,9 +75,18 @@ class TestPredatorPreyGridEnvironment(unittest.TestCase):
         
         
         best_move = pred2.get_best_move(pred2.get_prey_path(pred2_nearest_prey))
-        print('\n\n\n printing board: ')
-        print(self.env.print_board())
         self.assertEqual(best_move, self.env._get_coord(Coord(0,3)))
+        
+    def test_actuate(self):
+        pred1 = Predator('1', Coord(0,0),self.env, 5, 1)
+        pred2 = Predator('2', Coord(0,1), self.env,5, speed = 2)
+        prey1 = Prey('1', Coord(0,4),self.env)
+        
+        pred1.actuate()
+        self.assertEqual(pred1.current_coord, self.env._get_coord(Coord(1,0)))
+        
+        pred2.actuate()
+        self.assertEqual(pred2.current_coord, self.env._get_coord(Coord(0,3)))
         
         
         #self.assertEqual(best_move, self.env._get_coord(Coord(0,3)))

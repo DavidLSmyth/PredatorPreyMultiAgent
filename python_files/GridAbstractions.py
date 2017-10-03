@@ -1,3 +1,6 @@
+#stdlib
+import random
+#user defined
 from python_files.Coordinate import Coord
 
 class GridPawn:
@@ -47,6 +50,19 @@ class GridPawnAgent(GridPawn):
     def find_available_moves(self):
         '''returns all unoccupied coordinates of distance less than speed'''
         return(self._find_available_squares(self.speed))
+
+    def actuate(self, strategy = None):
+        '''Grid_pawn perceives the environment, receives messages from other agents
+        and implements a strategy'''
+        if 'perceive' in dir(self) and 'recieve_message' in dir(self) and 'implement_strategy' in dir(self):
+            #first perceive the environment
+            self.perceive()
+            #recieve any messages from other predators
+            self.recieve_message()
+            #now implement a strategy to hunt the prey
+            self.implement_strategy(strategy)
+        else:
+            raise NotImplementedError('perceive, receive_message, implement_strategy must all be implemented to actuate')
     
     def move(self, coord:Coord):
         if coord in self.find_available_moves():
@@ -85,6 +101,11 @@ class GridEnvironment:
         
     def __repr__(self):
         return 'GridEnvironment({},{})'.format(self.rows, self.columns)
+    
+    def get_random_free_square(self):
+        if self._get_coord(Coord(random.randint(0,self.rows),
+                                 random.randint(0,self.columns))) in self.get_unoccupied_coords():
+            return self._get_coord(Coord(random.randint(0,self.rows), random.randint(0,self.columns)))
     
     def get_occupied_coords(self):
         return self.occupied_coords

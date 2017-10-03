@@ -13,8 +13,8 @@ import unittest
 #user defined
 from python_files.PredatorPreyGridEnvironment import PredatorPreyGridEnvironment
 from python_files.Coordinate import Coord
-from python_files.Predator import Predator
-from python_files.Prey import Prey
+from python_files.GridPawnSubclasses import Predator, Prey
+
 
 class TestPredatorPreyGridEnvironment(unittest.TestCase):
     

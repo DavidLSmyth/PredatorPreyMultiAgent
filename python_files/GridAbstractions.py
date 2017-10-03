@@ -63,10 +63,22 @@ class GridPawnAgent(GridPawn):
             raise NotImplementedError('Error: receive_message, implement_strategy must all be implemented to actuate')
     
     def move(self, coord:Coord):
+        '''moves the GridPawn to desired Coordinate if possible, otherwise 
+        returns False if there are no moves available, otherwise raises an
+        exception'''
         if coord in self.find_available_moves():
             super().move(coord)
+            return True
+        elif self.find_available_moves == []:
+            return False
         else:
             raise Exception('Invalid move')
+            
+    def random_movement(self):
+        '''Moves the agent to a random valid square'''
+        move_choice = random.choice(self.find_available_moves())
+        print(self, ' is randomly moving to {}'.format(move_choice))
+        self.move(move_choice)
     
     def perceive(self):
         '''Updates prey/other predator position if prey is within perception_radius squares'''
@@ -86,6 +98,25 @@ class GridPawnAgent(GridPawn):
                 return True
             else:
                 return False
+
+    def find_nearest_Agent(self, AgentType: 'Predator, Prey or other derived class'):
+        '''returns the nearest predator or prey to the current agent'''
+        perceived_nearest_agent_dist = Coord(self.env.columns, self.env.rows).get_dist(Coord(0, 0))
+        perceived_nearest_agent = None
+        #print('beliefs: ', self._beliefs)
+        #print(sorted(self._beliefs.items(), key = lambda x: x[1].get_dist(self)))
+        for agent_key, agent_value in self._beliefs.items():
+            #if the distance from the nearest prey to the predator is less than the current
+            #nearest prey, update current_prey
+            #print('prey_value: ', prey_value)
+            if isinstance(agent_key, AgentType) and isinstance(agent_value, Coord):
+                if agent_value.get_dist(self.current_coord) <= perceived_nearest_agent_dist:
+                    perceived_nearest_agent = agent_key
+                    perceived_nearest_agent_dist = agent_value.get_dist(self.current_coord) 
+        print(self.__str__(),
+              'detected nearest prey: {} - seaching for shortest path to prey'.format(
+                  perceived_nearest_agent.__str__()))
+        return perceived_nearest_agent
     
 class GridEnvironment:
     '''Creates a grid environment'''

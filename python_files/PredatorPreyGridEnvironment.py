@@ -6,7 +6,7 @@ Created on Mon Oct  2 20:31:30 2017
 @author: david
 """
 from python_files.GridAbstractions import GridEnvironment
-from python_files.Predator import Predator
+from python_files.GridPawnSubclasses import Predator
 from python_files.Coordinate import Coord
 
 class PredatorPreyGridEnvironment(GridEnvironment):

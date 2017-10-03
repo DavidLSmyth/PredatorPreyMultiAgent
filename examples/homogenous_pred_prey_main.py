@@ -13,7 +13,7 @@ from PredatorPreyMultiAgent.python_files.HomogenousRunSimulation import Homogeno
 from PredatorPreyMultiAgent.python_files.PredatorPreyGridEnvironment import PredatorPreyGridEnvironment
 
 def main():
-    env = PredatorPreyGridEnvironment(8,8)
+    env = PredatorPreyGridEnvironment(10,10)
     sim = HomogenousRunSimulation(env, 2, 2, 5, 2, 1, 1)
     sim.run_input()
 

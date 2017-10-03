@@ -1,6 +1,5 @@
 #User defined imports
-from python_files.Predator import Predator
-from python_files.Prey import Prey
+from python_files.GridPawnSubclasses import Prey, Predator
 from python_files.PredatorPreyGridEnvironment import PredatorPreyGridEnvironment
 
 

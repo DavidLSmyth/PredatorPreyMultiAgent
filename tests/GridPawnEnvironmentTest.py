@@ -77,6 +77,28 @@ class GridPawnEnvironmentTest(unittest.TestCase):
         self.assertFalse(self.env._get_coord(Coord(0,0)) in self.env.occupied_coords)
         print(self.env.print_board())
         
+    def test_pawnAgent_available_squares(self):
+        pawn1 = GridPawnAgent('1',Coord(0,0), self.env)
+        pawn2 = GridPawnAgent('2',Coord(4,4), self.env)
+        self.assertTrue(all([x in list(map(lambda x: self.env._get_coord(x), [Coord(4,3), Coord(4,5), Coord(3,4), Coord(5,4)])) for x in pawn2._find_available_squares(1)]))
+        self.assertTrue(all([x in list(map(lambda x: self.env._get_coord(x), [Coord(4,3), Coord(4,5), Coord(3,4), Coord(5,4),
+                                           Coord(2,4), Coord(6,4), Coord(4,2), Coord(4,6), Coord(3,5), Coord(5,5), Coord(3,3), Coord(5,3)])) for x in pawn2._find_available_squares(2)]))
+    
+        self.assertTrue(all([x in pawn2._find_available_squares(2) for x in list(map(lambda x: self.env._get_coord(x), [Coord(4,3), Coord(4,5), Coord(3,4), Coord(5,4),
+                                           Coord(2,4), Coord(6,4), Coord(4,2), Coord(4,6), Coord(3,5), Coord(5,5), Coord(3,3), Coord(5,3)]))]))
+    
+        self.assertFalse(all([x in list(map(lambda x: self.env._get_coord(x), [Coord(4,3), Coord(4,5), Coord(3,4), Coord(5,4),
+                                           Coord(2,4), Coord(6,4), Coord(4,2), Coord(4,6), Coord(3,5), Coord(5,5), Coord(3,3), Coord(5,3)])) for x in pawn2._find_available_squares(3)]))
+    
+        pawn2.move(Coord(4,5))
+        pawn3 = GridPawnAgent('3', Coord(4,4), self.env,5,2)
+        self.assertTrue(all([x in pawn3.find_available_moves() for x in list(map(lambda x: self.env._get_coord(x), [Coord(4,3), Coord(3,4), Coord(5,4),
+                                           Coord(2,4), Coord(6,4), Coord(4,2), Coord(4,6), Coord(3,5), Coord(5,5), Coord(3,3), Coord(5,3)]))]))
+    
+        self.assertFalse(all([x in pawn3.find_available_moves() for x in list(map(lambda x: self.env._get_coord(x), [Coord(4,3), Coord(4,5), Coord(3,4), Coord(5,4),
+                                           Coord(2,4), Coord(6,4), Coord(4,2), Coord(4,6), Coord(3,5), Coord(5,5), Coord(3,3), Coord(5,3)]))]))
+        #find_available_moves
+        
         
     def test_perceive_pawnAgent(self):
         pawn1 = GridPawnAgent('1', Coord(4,4), self.env, speed = 10)

@@ -14,7 +14,7 @@ class Predator(GridPawnAgent):
     def __init__(self, name, coordinate: Coord, environment: GridEnvironment, perception_radius = 3, speed = 1):
         '''Creates a predator that can pervieve 3 blocks NESW. If anything comes into range while the predator is alive, it knows
         that it exists but may not be able to keep track of its position if the predator moves out of perception range.'''
-        super().__init__(name,coordinate, environment, speed)
+        super().__init__(name,coordinate, environment, perception_radius = perception_radius, speed=speed)
         #no idea where prey is at first, no idea where other predators are either
         self.perception_radius = perception_radius
         self.name = 'Pd'+name
@@ -55,7 +55,7 @@ class Predator(GridPawnAgent):
         path_to_prey = prey_location_details[1]
         possible_moves = list(filter(lambda x: x in self.find_available_moves(), path_to_prey))
         print('possible predator moves: {}'.format(possible_moves))
-        #best move is the one that gets predator as close as possible to prey
+        #best move is the one that gets predator as close as possible to prey - this is as far down the detected shortest path to the prey as possible
         best_move_index = [self.current_coord.get_dist(x) for x in possible_moves].index(max([self.current_coord.get_dist(x) for x in possible_moves]))
         print('moving to square {}'.format(possible_moves[best_move_index]))
         return possible_moves[best_move_index]

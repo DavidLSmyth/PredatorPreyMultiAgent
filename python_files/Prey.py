@@ -11,7 +11,7 @@ class Prey(GridPawnAgent):
     def __init__(self, name, coordinate: Coord, environment: GridEnvironment, perception_radius = 3, speed = 1):
         '''Creates a prey that can pervieve 2 blocks NESW. If anything comes into range while the predator is alive, it knows
         that it exists but may not be able to keep track of its position if the predator moves out of perception range.'''
-        super().__init__(name, coordinate, environment, perception_radius, speed)
+        super().__init__(name, coordinate, environment, perception_radius = perception_radius, speed = speed)
         #no idea where predators are at first, no idea where other prey are either
         self._beliefs = {'other_pred_pos':{}}
         self.hunted = False

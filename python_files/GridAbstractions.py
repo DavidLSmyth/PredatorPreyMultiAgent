@@ -199,16 +199,16 @@ class GridEnvironment:
         while Q != [] and end_coord not in visited_nodes:
             #if we have already visited end_coord, it will be a shortest path since 
             #bfs works in layers
-            print('Q: ', Q)
+            #print('Q: ', Q)
             current_node = Q.pop()
-            print('Exploring current node: ',current_node)
-            print('dist_to_end: {}'.format(dist_to_end))
+            #print('Exploring current node: ',current_node)
+            #print('dist_to_end: {}'.format(dist_to_end))
             #for each of the current node's neighbors:
             for node in get_neighbor_function(current_node):
                 #if the node has not yet been visited, append the node to the queue
                 if node not in visited_nodes and node not in Q:
                     predecessors[node.__str__()] = current_node.__str__()
-                    print('enqueing {}'.format(node))
+                    #print('enqueing {}'.format(node))
                     Q.insert(0,node)
                 #mark current node as visited
                 visited_nodes.append(current_node)
@@ -220,9 +220,9 @@ class GridEnvironment:
             #reconstruct path
             path = [self._get_coord(eval('Coord('+end_coord.__str__()+')'))]
             current_predecessor = predecessors[end_coord.__str__()]
-            print(path)
+            #print(path)
             while current_predecessor != None:
-                print(current_predecessor)
+                #print(current_predecessor)
                 #print(self._get_coord(Coord(current_predecessor.split(',')[0],current_predecessor.split(',')[0])))
                 path.append(self._get_coord(eval('Coord('+current_predecessor+')')))
                 current_predecessor  = predecessors[current_predecessor]

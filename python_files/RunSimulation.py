@@ -28,13 +28,16 @@ class RunSimulation:
         #first perceive the environment
         for agent in self.predators + self.prey:
             agent.perceive()
-            agent.perceive()
         #allow each predator and prey to make a move. exceptions should
         #occur when predators and prey try to move to the same grid location
-        print(self.predators + self.prey)
         for agent in self.predators + self.prey:            
             try:
-                agent.actuate()
+                if isinstance(agent, Prey):
+                    agent.actuate('simple_evade_strategy')
+                elif isinstance(agent, Predator):
+                    agent.actuate('simple_hunt_strategy')
+                else:
+                    print('could not identify agent')
             except Exception as e:
                 print(e)
         print(self.env.print_board())

@@ -14,7 +14,10 @@ from PredatorPreyMultiAgent.python_files.PredatorPreyGridEnvironment import Pred
 
 def main():
     env = PredatorPreyGridEnvironment(10,10)
-    sim = HomogenousRunSimulation(env, 2, 2, 5, 2, 1, 1)
+    #env: PredatorPreyGridEnvironment, no_predators: int, 
+    #             no_prey:int, pred_perception_radius: int, pred_speed: int, 
+    #             prey_perception_radius: int, prey_speed: int
+    sim = HomogenousRunSimulation(env, 2, 2, 5, 2, 4, 1)
     sim.run_input()
 
 

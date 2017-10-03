@@ -8,8 +8,7 @@ Created on Tue Oct  3 13:55:34 2017
 
 from python_files.RunSimulation import RunSimulation
 from python_files.PredatorPreyGridEnvironment import PredatorPreyGridEnvironment
-from python_files.Predator import Predator
-from python_files.Prey import Prey
+from python_files.GridPawnSubclasses import Prey, Predator
 
 class HomogenousRunSimulation(RunSimulation):
     

@@ -62,6 +62,14 @@ class GridPawnAgent(GridPawn):
         else:
             raise NotImplementedError('Error: receive_message, implement_strategy must all be implemented to actuate')
     
+    def implement_strategy(self, strategy_option: 'member of self.hunt_strategies' = None):
+        if strategy_option:
+            if strategy_option in self.strategies:
+                eval('self.'+strategy_option+'()')
+        else:
+            #execute default - ToDo
+            self.random_movement()
+            
     def move(self, coord:Coord):
         '''moves the GridPawn to desired Coordinate if possible, otherwise 
         returns False if there are no moves available, otherwise raises an
@@ -114,8 +122,8 @@ class GridPawnAgent(GridPawn):
                     perceived_nearest_agent = agent_key
                     perceived_nearest_agent_dist = agent_value.get_dist(self.current_coord) 
         print(self.__str__(),
-              'detected nearest prey: {} - seaching for shortest path to prey'.format(
-                  perceived_nearest_agent.__str__()))
+              '{} detected nearest Agent: {}'.format(
+                  perceived_nearest_agent, self))
         return perceived_nearest_agent
     
 class GridEnvironment:

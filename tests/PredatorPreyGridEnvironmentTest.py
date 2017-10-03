@@ -78,16 +78,16 @@ class TestPredatorPreyGridEnvironment(unittest.TestCase):
         self.assertEqual(best_move, self.env._get_coord(Coord(0,3)))
         
     def test_actuate(self):
-        pred1 = Predator('1', Coord(0,0),self.env, 5, 1)
+        pred1 = Predator('1', Coord(0,0),self.env, 5, speed = 1)
         pred2 = Predator('2', Coord(0,1), self.env,5, speed = 2)
         prey1 = Prey('1', Coord(0,4),self.env)
         
         pred1.perceive()
-        pred1.actuate()
+        pred1.actuate('simple_hunt_strategy')
         self.assertEqual(pred1.current_coord, self.env._get_coord(Coord(1,0)))
         
         pred2.perceive()
-        pred2.actuate()
+        pred2.actuate('simple_hunt_strategy')
         self.assertEqual(pred2.current_coord, self.env._get_coord(Coord(0,3)))
         
         

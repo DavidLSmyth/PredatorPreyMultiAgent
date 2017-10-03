@@ -19,20 +19,14 @@ class Predator(GridPawnAgent):
                          perception_radius=perception_radius, speed=speed)
         #no idea where prey is at first, no idea where other predators are either
         self.name = 'Pd'+name
-        self.hunt_strategies = ['simple_hunt_strategy']
+        self.strategies = ['simple_hunt_strategy']
         
     def __repr__(self):
         return('Predator({},{},{},{},{})'.format(
             self.name.replace('Pd', ''),
             self.current_coord, self.env, self.perception_radius, self.speed))
         
-    def implement_strategy(self, strategy_option: 'member of self.hunt_strategies' = None):
-        if strategy_option:
-            if strategy_option in self.hunt_strategies:
-                eval('self.'+strategy_option+'()')
-        else:
-            #execute default - ToDo
-            self.simple_hunt_strategy()
+
 
     def find_nearest_prey(self):
         '''returns the prey and believed coordinates of the nearest prey,
@@ -96,7 +90,7 @@ class Prey(GridPawnAgent):
         self._beliefs = {'other_pred_pos':{}}
         self.hunted = False
         self.name = 'Py'+name
-        self.escape_strategies = ['random_movement']
+        self.strategies = ['simple_evade_strategy','random_movement']
     
     def __repr__(self):
         return('Prey({},{},{},{},{})'.format(self.name.replace('Py',''), self.current_coord, self.env, self.perception_radius, self.speed))
@@ -107,16 +101,23 @@ class Prey(GridPawnAgent):
         return self.find_nearest_Agent(Predator)
         
     def simple_evade_strategy(self):
+        print('{} implementing simple evade strategy'.format(self))
         nearest_predator = self.find_nearest_predator()
         if(nearest_predator):
+            print('Nearest Predator {} detected'.format(nearest_predator))
             #beliefs holds coordinates for nearest predator
             perceived_predator_location_details = self._beliefs[nearest_predator]
             if perceived_predator_location_details:
                 #make the best move given the location of the nearest predator
                  if self.move(self.get_naive_best_move(perceived_predator_location_details)):
+                     print('{} moving strategically'.format(self))
                      pass
                  else:
+                     print('{} moving randomly'.format(self))
                      self.random_movement()
+        else:
+            print('couldnt find nearest predator, moving randomly')
+            self.random_movement()
                      
     def get_naive_best_move(self, perceived_predator_location):
         '''Returns the best move for Prey to make in order to avoid a Predator. Naively 
@@ -127,13 +128,6 @@ class Prey(GridPawnAgent):
                          self.find_available_moves()))))
         return self.find_available_moves()[naive_best_move_index]
         
-    def implement_strategy(self, strategy_option: 'member of self.hunt_strategies' = None):
-        if strategy_option:
-            if strategy_option in self.hunt_strategies:
-                eval('self.'+strategy_option+'()')
-        else:
-            #execute default - ToDo
-            self.random_movement()
             
     def receive_message(self):
         pass

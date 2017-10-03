@@ -9,15 +9,15 @@ import sys
 sys.path.append('..')
 sys.path.append('../..')
 #user defined
-from PredatorPreyMultiAgent.python_files.HomogenousRunSimulation import HomogenousRunSimulation
-from PredatorPreyMultiAgent.python_files.PredatorPreyGridEnvironment import PredatorPreyGridEnvironment
+from python_files.HomogenousRunSimulation import HomogenousRunSimulation
+from python_files.PredatorPreyGridEnvironment import PredatorPreyGridEnvironment
 
 def main():
-    env = PredatorPreyGridEnvironment(10,10)
+    env = PredatorPreyGridEnvironment(15,15)
     #env: PredatorPreyGridEnvironment, no_predators: int, 
     #             no_prey:int, pred_perception_radius: int, pred_speed: int, 
     #             prey_perception_radius: int, prey_speed: int
-    sim = HomogenousRunSimulation(env, 2, 2, 5, 2, 4, 1)
+    sim = HomogenousRunSimulation(env, 3, 5, 3, 2, 8, 2)
     sim.run_input()
 
 

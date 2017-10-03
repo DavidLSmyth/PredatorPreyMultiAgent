@@ -14,10 +14,12 @@ class RunSimulation:
         if(len(self.predators) + len(self.prey)) > self.env.rows/2 or(
                 len(self.predators) + len(self.prey)) > self.env.columns/2:
             raise Warning('''Environment will be very cluttered,
-                          consider using fewer predators and prey''')
+                          consider using fewer predators and prey. {} predators and {} prey'''.format(len(self.predators), len(self.prey)))
         if(len(self.predators) + len(self.prey)) >= self.env.rows + self.env.columns:
             raise Exception('''Grid is not big enough to accomodate {}
             prey and {} predators'''.format(len(self.prey), len(self.predators)))
+            
+        print('initialising environment: {} predators and {} prey'.format(len(self.predators), len(self.prey)))
         print('initial setup: ')
         print(self.env.print_board())
 

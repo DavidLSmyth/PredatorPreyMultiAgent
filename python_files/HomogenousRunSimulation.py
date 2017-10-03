@@ -16,11 +16,13 @@ class HomogenousRunSimulation(RunSimulation):
                  no_prey:int, pred_perception_radius: int, pred_speed: int, 
                  prey_perception_radius: int, prey_speed: int):
         
+        #self, name, coordinate: Coord, environment: GridEnvironment,
+        #         perception_radius=3, speed=1
         predator_list = [Predator(str(i), env.get_random_free_square(), 
-                                  env, pred_perception_radius, pred_speed) for i in range(no_predators)]
+                                  env, perception_radius = pred_perception_radius, speed = pred_speed) for i in range(no_predators)]
     
         prey_list = [Prey(str(i), env.get_random_free_square(), 
-                                  env, prey_perception_radius, prey_speed) for i in range(no_prey)]
+                                  env, perception_radius = prey_perception_radius, speed = prey_speed) for i in range(no_prey)]
     
         super().__init__(predator_list, prey_list, env)
         

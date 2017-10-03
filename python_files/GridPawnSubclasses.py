@@ -60,7 +60,8 @@ class Predator(GridPawnAgent):
             if prey_location_details:
                 self.move(self.get_best_move(prey_location_details))
             else:
-                #this should mean that predator is boxed in
+                #this should mean that predator is boxed in and has no available moves - try a 
+                #random movement in case of a bug
                 #print('could not find a path from {} to nearest prey {}'.format(self,nearest_prey))
                 self.random_movement()
         else:
@@ -109,13 +110,22 @@ class Prey(GridPawnAgent):
         nearest_predator = self.find_nearest_predator()
         if(nearest_predator):
             #beliefs holds coordinates for nearest predator
-            predator_location_details = self._beliefs[nearest_predator]
-            if predator_location_details:
+            perceived_predator_location_details = self._beliefs[nearest_predator]
+            if perceived_predator_location_details:
                 #make the best move given the location of the nearest predator
-                 if self.move(self.get_best_move(predator_location_details)):
+                 if self.move(self.get_naive_best_move(perceived_predator_location_details)):
                      pass
                  else:
                      self.random_movement()
+                     
+    def get_naive_best_move(self, perceived_predator_location):
+        '''Returns the best move for Prey to make in order to avoid a Predator. Naively 
+        tries to maximise distance between itself and the nearest predator that it has detected.'''
+        naive_best_move_index = list(map(lambda x: perceived_predator_location.get_dist(x), 
+                                   self.find_available_moves())).index(
+            max(list(map(lambda x: perceived_predator_location.get_dist(x),
+                         self.find_available_moves()))))
+        return self.find_available_moves()[naive_best_move_index]
         
     def implement_strategy(self, strategy_option: 'member of self.hunt_strategies' = None):
         if strategy_option:

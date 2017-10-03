@@ -82,9 +82,11 @@ class TestPredatorPreyGridEnvironment(unittest.TestCase):
         pred2 = Predator('2', Coord(0,1), self.env,5, speed = 2)
         prey1 = Prey('1', Coord(0,4),self.env)
         
+        pred1.perceive()
         pred1.actuate()
         self.assertEqual(pred1.current_coord, self.env._get_coord(Coord(1,0)))
         
+        pred2.perceive()
         pred2.actuate()
         self.assertEqual(pred2.current_coord, self.env._get_coord(Coord(0,3)))
         

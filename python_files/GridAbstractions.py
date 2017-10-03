@@ -52,17 +52,15 @@ class GridPawnAgent(GridPawn):
         return(self._find_available_squares(self.speed))
 
     def actuate(self, strategy = None):
-        '''Grid_pawn perceives the environment, receives messages from other agents
-        and implements a strategy'''
-        if 'perceive' in dir(self) and 'recieve_message' in dir(self) and 'implement_strategy' in dir(self):
-            #first perceive the environment
-            self.perceive()
+        '''Grid_pawn receives messages from other agents
+        and implements a strategy. Should have already perceived the environment'''
+        if 'receive_message' in dir(self) and 'implement_strategy' in dir(self):
             #recieve any messages from other predators
-            self.recieve_message()
+            self.receive_message()
             #now implement a strategy to hunt the prey
             self.implement_strategy(strategy)
         else:
-            raise NotImplementedError('perceive, receive_message, implement_strategy must all be implemented to actuate')
+            raise NotImplementedError('Error: receive_message, implement_strategy must all be implemented to actuate')
     
     def move(self, coord:Coord):
         if coord in self.find_available_moves():
@@ -103,9 +101,8 @@ class GridEnvironment:
         return 'GridEnvironment({},{})'.format(self.rows, self.columns)
     
     def get_random_free_square(self):
-        if self._get_coord(Coord(random.randint(0,self.rows),
-                                 random.randint(0,self.columns))) in self.get_unoccupied_coords():
-            return self._get_coord(Coord(random.randint(0,self.rows), random.randint(0,self.columns)))
+        return random.choice(self.get_unoccupied_coords())
+        
     
     def get_occupied_coords(self):
         return self.occupied_coords
@@ -175,21 +172,28 @@ class GridEnvironment:
             
     def _get_coord(self,coord):
         '''helper method to return the coord beloning to the current class'''
-        return [x for x in self.coords if x == coord][0]
+        if [x for x in self.coords if x == coord]:
+            return [x for x in self.coords if x == coord][0]
+        else:
+            raise Exception('Coordinate {} not found in {} X {} grid '.format(coord, self.rows, self.columns))
     
     def print_board(self) -> str:
-        padding = '  0  |'
+        padding = '     |'
         
-        print_string = '\n'+'-'*len(padding)*self.rows + '\n'
+        print_string = '   |'
+        for i in range(self.rows):
+            print_string+='  {}  |'.format(i) 
+            
+        print_string += '\n   '+'-'*len(padding)*self.rows + '\n'
         for x_coord in range(self.columns):
-            print_string+='|'
+            print_string+='  {}|'.format(x_coord)
             for y_coord in range(self.rows):
                 if self.coord_occupied(self._get_coord(Coord(x_coord, y_coord))):
                     pawn = self._get_coord(Coord(x_coord, y_coord)).get_value()
                     print_string+=' {} |'.format(pawn.name)
                 else:
                     print_string+=padding
-            print_string+='\n'+'-'*len(padding)*self.rows + '\n'
+            print_string+='\n   '+'-'*len(padding)*self.rows + '\n'
         return print_string
     
     def get_neighbor_coords(self, coord:Coord):

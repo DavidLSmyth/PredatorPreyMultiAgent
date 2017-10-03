@@ -4,7 +4,7 @@ Created on Wed Sep 27 12:27:28 2017
 
 @author: 13383861
 """
-
+import random
 
 from python_files.GridAbstractions import GridEnvironment, GridPawnAgent
 from python_files.Prey import Prey
@@ -42,15 +42,16 @@ class Predator(GridPawnAgent):
         #initialise nearest_prey_coords as the furthest possible distance in the grid
         perceived_nearest_prey_dist = Coord(self.env.columns, self.env.rows).get_dist(Coord(0, 0))
         perceived_nearest_prey = None
-        print('beliefs: ', self._beliefs)
+        #print('beliefs: ', self._beliefs)
         #print(sorted(self._beliefs.items(), key = lambda x: x[1].get_dist(self)))
         for prey_key, prey_value in self._beliefs.items():
             #if the distance from the nearest prey to the predator is less than the current
             #nearest prey, update current_prey
-            print('prey_value: ', prey_value)
+            #print('prey_value: ', prey_value)
             if isinstance(prey_key, Prey) and isinstance(prey_value, Coord):
                 if prey_value.get_dist(self.current_coord) <= perceived_nearest_prey_dist:
                     perceived_nearest_prey = prey_key
+                    perceived_nearest_prey_dist = prey_value.get_dist(self.current_coord) 
         print(self.__str__(),
               'detected nearest prey: {} - seaching for shortest path to prey'.format(
                   perceived_nearest_prey.__str__()))
@@ -77,10 +78,12 @@ class Predator(GridPawnAgent):
             if prey_location_details:
                 self.move(self.get_best_move(prey_location_details))
             else:
-                print('could not find a path from {} to nearest prey {}'.format(self,nearest_prey))
+                #print('could not find a path from {} to nearest prey {}'.format(self,nearest_prey))
+                self.move(random.choice(self.find_available_moves()))
         else:
             #move to a random unoccupied square
-            print('could not find prey')
+            #print(self.__str__()+'could not find prey')
+            pass
             
         
     def get_prey_path(self, prey):
@@ -92,7 +95,7 @@ class Predator(GridPawnAgent):
             raise Exception('Prey {} not in self._beliefs'.format(prey))
             
             
-    def recieve_message(self):
+    def receive_message(self):
         '''Receives message from other predator(s)'''
         pass
     

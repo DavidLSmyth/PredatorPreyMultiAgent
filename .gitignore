@@ -100,5 +100,9 @@ ENV/
 # mypy
 .mypy_cache/
 
-#logging files
-logging_output
+# exclude everything
+logging_output/*
+
+# exception to the rule
+!logging_output/.gitkeep 
+

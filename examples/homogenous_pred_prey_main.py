@@ -17,7 +17,7 @@ def main():
     #env: PredatorPreyGridEnvironment, no_predators: int, 
     #             no_prey:int, pred_perception_radius: int, pred_speed: int, 
     #             prey_perception_radius: int, prey_speed: int
-    sim = HomogenousRunSimulation(env, 3, 5, 3, 2, 8, 2)
+    sim = HomogenousRunSimulation(env, 3, 1, 3, 2, 8, 1)
     sim.run_input()
 
 

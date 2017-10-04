@@ -6,18 +6,16 @@ from python_files.PredatorPreyGridEnvironment import PredatorPreyGridEnvironment
 class RunSimulation:
     '''Runs a predator-prey simulation on a PredatorPreyGridEnvironment.
     Subclasses specify homogenous/heterogenous systems.'''
-    def __init__(self, predators: 'list(Predator)', prey: 'list(Prey)', env):
+    def __init__(self, predators: 'list(Predator)', prey: 'list(Prey)', env: PredatorPreyGridEnvironment):
         self.env = env
         self.predators = predators
         self.prey = prey
 
-        if(len(self.predators) + len(self.prey)) > self.env.rows/2 or(
-                len(self.predators) + len(self.prey)) > self.env.columns/2:
-            raise Warning('''Environment will be very cluttered,
-                          consider using fewer predators and prey. {} predators and {} prey'''.format(len(self.predators), len(self.prey)))
-        if(len(self.predators) + len(self.prey)) >= self.env.rows + self.env.columns:
-            raise Exception('''Grid is not big enough to accomodate {}
-            prey and {} predators'''.format(len(self.prey), len(self.predators)))
+#        if(len(self.predators) + len(self.prey)) > self.env.rows/2 or(
+#                len(self.predators) + len(self.prey)) > self.env.columns/2:
+#            raise Warning('''Environment will be very cluttered, consider using fewer predators and prey. {} predators and {} prey'''.format(len(self.predators), len(self.prey)))
+#        if(len(self.predators) + len(self.prey)) >= self.env.rows + self.env.columns:
+#            raise Exception('''Grid is not big enough to accomodate {} prey and {} predators'''.format(len(self.prey), len(self.predators)))
             
         print('initialising environment: {} predators and {} prey'.format(len(self.predators), len(self.prey)))
         print('initial setup: ')

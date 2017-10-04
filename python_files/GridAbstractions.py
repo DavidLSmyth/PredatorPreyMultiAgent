@@ -1,7 +1,12 @@
 #stdlib
 import random
+
+#3rd party
+from autologging import logged, traced, TRACE
+
 #user defined
 from python_files.Coordinate import Coord
+
 
 class GridPawn:
     '''An abstract class which creates a pawn on the grid and allows the pawn to move around on the grid. The pawn may only exist on the grid'''

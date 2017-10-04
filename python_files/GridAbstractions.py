@@ -1,4 +1,5 @@
 #stdlib
+import logging
 import random
 
 #3rd party
@@ -6,6 +7,10 @@ from autologging import logged, traced, TRACE
 
 #user defined
 from python_files.Coordinate import Coord
+
+#logging file should exist in logging module
+logging.basicConfig(datefmt='%Y/%m/%d %I:%M:%S %p', level=TRACE,
+                    filename='''../logging_output/PredPreySim.log''', format="%(levelname)s:%(name)s:%(funcName)s:%(message)s")
 
 @logged
 class GridPawn:
@@ -37,7 +42,7 @@ class GridPawn:
     def __repr__(self):
         return self.name+str(self.current_coord)
             
-    
+@logged    
 class GridPawnAgent(GridPawn):
     def __init__(self, name, coord: Coord, environment, perception_radius = 3, speed = 1):
         super().__init__(name, coord, environment)
@@ -90,7 +95,7 @@ class GridPawnAgent(GridPawn):
     def random_movement(self):
         '''Moves the agent to a random valid square'''
         move_choice = random.choice(self.find_available_moves())
-        print(self, ' is randomly moving to {}'.format(move_choice))
+        self.__log.info('{} is randomly moving to {}'.format(self, move_choice))
         self.move(move_choice)
     
     def perceive(self):
@@ -116,21 +121,21 @@ class GridPawnAgent(GridPawn):
         '''returns the nearest predator or prey to the current agent'''
         perceived_nearest_agent_dist = Coord(self.env.columns, self.env.rows).get_dist(Coord(0, 0))
         perceived_nearest_agent = None
-        #print('beliefs: ', self._beliefs)
-        #print(sorted(self._beliefs.items(), key = lambda x: x[1].get_dist(self)))
+        #self.__log.info('beliefs: ', self._beliefs)
+        #self.__log.info(sorted(self._beliefs.items(), key = lambda x: x[1].get_dist(self)))
         for agent_key, agent_value in self._beliefs.items():
             #if the distance from the nearest prey to the predator is less than the current
             #nearest prey, update current_prey
-            #print('prey_value: ', prey_value)
+            #self.__log.info('prey_value: ', prey_value)
             if isinstance(agent_key, AgentType) and isinstance(agent_value, Coord):
                 if agent_value.get_dist(self.current_coord) <= perceived_nearest_agent_dist:
                     perceived_nearest_agent = agent_key
                     perceived_nearest_agent_dist = agent_value.get_dist(self.current_coord) 
-        print(self.__str__(),
-              '{} detected nearest Agent: {}'.format(
-                  perceived_nearest_agent, self))
+        self.__log.info('{} detected nearest Agent: {}'.format(
+                  self,perceived_nearest_agent))
         return perceived_nearest_agent
     
+@logged   
 class GridEnvironment:
     '''Creates a grid environment'''
     def __init__(self, rows=10, columns=10):
@@ -176,7 +181,7 @@ class GridEnvironment:
             self.occupied_coords.remove(pawn.current_coord)
             pawn.current_coord.set_occupied(False)
             pawn.current_coord.occupied_val=None
-            print('Successfully removed pawn {} from environment'.format(pawn.name))
+            self.__log.info('Successfully removed pawn {} from environment'.format(pawn.name))
             del pawn
             
         else:
@@ -187,7 +192,7 @@ class GridEnvironment:
         if pawn in self.grid_pawns:
             coord = self._get_coord(coord)
             if not self.coord_occupied(coord):
-                print('moving pawn {} to coordinate {}'.format(pawn.__str__(),coord.__str__()))
+                self.__log.info('moving pawn {} to coordinate {}'.format(pawn.__str__(),coord.__str__()))
                 pawn.current_coord.set_occupied(False)
                 pawn.current_coord.occupied_val = None
                 self.occupied_coords.remove(pawn.current_coord)
@@ -224,21 +229,21 @@ class GridEnvironment:
     def print_board(self) -> str:
         padding = '     |'
         
-        print_string = '   |'
+        self.__log.info_string = '   |'
         for i in range(self.rows):
-            print_string+='  {}  |'.format(i) 
+            self.__log.info_string+='  {}  |'.format(i) 
             
-        print_string += '\n   '+'-'*len(padding)*self.rows + '\n'
+        self.__log.info_string += '\n   '+'-'*len(padding)*self.rows + '\n'
         for x_coord in range(self.columns):
-            print_string+='  {}|'.format(x_coord)
+            self.__log.info_string+='  {}|'.format(x_coord)
             for y_coord in range(self.rows):
                 if self.coord_occupied(self._get_coord(Coord(x_coord, y_coord))):
                     pawn = self._get_coord(Coord(x_coord, y_coord)).get_value()
-                    print_string+=' {} |'.format(pawn.name)
+                    self.__log.info_string+=' {} |'.format(pawn.name)
                 else:
-                    print_string+=padding
-            print_string+='\n   '+'-'*len(padding)*self.rows + '\n'
-        return print_string
+                    self.__log.info_string+=padding
+            self.__log.info_string+='\n   '+'-'*len(padding)*self.rows + '\n'
+        return self.__log.info_string
     
     def get_neighbor_coords(self, coord:Coord):
         '''returns all non-diagonal adjacent nodes'''
@@ -268,16 +273,16 @@ class GridEnvironment:
         while Q != [] and end_coord not in visited_nodes:
             #if we have already visited end_coord, it will be a shortest path since 
             #bfs works in layers
-            #print('Q: ', Q)
+            #self.__log.info('Q: ', Q)
             current_node = Q.pop()
-            #print('Exploring current node: ',current_node)
-            #print('dist_to_end: {}'.format(dist_to_end))
+            #self.__log.info('Exploring current node: ',current_node)
+            #self.__log.info('dist_to_end: {}'.format(dist_to_end))
             #for each of the current node's neighbors:
             for node in get_neighbor_function(current_node):
                 #if the node has not yet been visited, append the node to the queue
                 if node not in visited_nodes and node not in Q:
                     predecessors[node.__str__()] = current_node.__str__()
-                    #print('enqueing {}'.format(node))
+                    #self.__log.info('enqueing {}'.format(node))
                     Q.insert(0,node)
                 #mark current node as visited
                 visited_nodes.append(current_node)
@@ -289,10 +294,10 @@ class GridEnvironment:
             #reconstruct path
             path = [self._get_coord(eval('Coord('+end_coord.__str__()+')'))]
             current_predecessor = predecessors[end_coord.__str__()]
-            #print(path)
+            #self.__log.info(path)
             while current_predecessor != None:
-                #print(current_predecessor)
-                #print(self._get_coord(Coord(current_predecessor.split(',')[0],current_predecessor.split(',')[0])))
+                #self.__log.info(current_predecessor)
+                #self.__log.info(self._get_coord(Coord(current_predecessor.split(',')[0],current_predecessor.split(',')[0])))
                 path.append(self._get_coord(eval('Coord('+current_predecessor+')')))
                 current_predecessor  = predecessors[current_predecessor]
                 dist_to_end+=1

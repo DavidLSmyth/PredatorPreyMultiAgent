@@ -12,14 +12,27 @@ sys.path.append('../..')
 from python_files.HomogenousRunSimulation import HomogenousRunSimulation
 from python_files.PredatorPreyGridEnvironment import PredatorPreyGridEnvironment
 
-def main():
+def main():        
+        
     env = PredatorPreyGridEnvironment(15,15)
     #env: PredatorPreyGridEnvironment, no_predators: int, 
     #             no_prey:int, pred_perception_radius: int, pred_speed: int, 
     #             prey_perception_radius: int, prey_speed: int
     sim = HomogenousRunSimulation(env, 3, 1, 3, 2, 8, 1)
-    sim.run_input()
-
+    
+    user_args = sys.argv
+    mode = user_args[1]
+    if len(user_args)>2:
+        try:
+            time_step = float(user_args[2])
+        except ValueError:
+            print('Please supply a valid number for the time step')
+            sys.exit(0)
+            
+    if mode == 'input':
+        sim.run_input()
+    elif mode == 'auto':
+        sim.run_auto(time_step)
 
 if __name__ == '__main__':
     main()

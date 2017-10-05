@@ -1,6 +1,9 @@
+#stdlib
 import logging
 import datetime
+import time
 
+#3rd party
 from autologging import logged, traced, TRACE
 
 
@@ -31,7 +34,7 @@ class RunSimulation:
         self.__log.info('\n\n\n -------------------- Logging new run {} --------------------'.format(datetime.datetime.now()))
         self.__log.info('initialising environment: {} predators and {} prey'.format(len(self.predators), len(self.prey)))
         self.__log.info('initial setup: ')
-        self.__log.info(self.env.self.__log.info_board())
+        self.__log.info('{}'.format(predators + prey))
 
 
     def time_step(self):
@@ -52,7 +55,12 @@ class RunSimulation:
                     self.__log.info('could not identify agent')
             except Exception as e:
                 self.__log.info(e)
-        self.__log.info(self.env.self.__log.info_board())
+        print(self.env.print_board())
+        
+    def run_auto(self, time_step):
+        while True:
+            self.time_step()
+            time.sleep(time_step)
         
     def run_input(self):
         inp = ''
